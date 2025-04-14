@@ -4,28 +4,32 @@ import { Link } from 'react-router-dom';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
 
   // Scroll listener
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > lastScrollY) {
-        setShowNav(false); // scrolling down
+      // Hide navbar only when scrolling down
+      if (window.scrollY > 0) {
+        setShowNav(false);
       } else {
-        setShowNav(true); // scrolling up
+        setShowNav(true);
       }
-      setLastScrollY(window.scrollY);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
+
+  // Function to close menu
+  const closeMenu = () => {
+    setIsOpen(false);
+  };
 
   return (
     <header
-    className={`bg-red-600 bg-opacity-90 text-white fixed z-30 top-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-7xl rounded-2xl shadow-xl transition-transform duration-300 ${
-      showNav ? 'translate-y-0' : '-translate-y-full'
-    }`}
+      className={`bg-red-600 bg-opacity-90 text-white fixed z-30 top-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-7xl rounded-2xl shadow-xl transition-transform duration-300 ${
+        showNav ? 'translate-y-0' : '-translate-y-[150%]'
+      }`}
     >
       <div className="container mx-auto flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">WiseTv</h1>
@@ -50,14 +54,14 @@ const Header = () => {
               : 'hidden lg:block'
           }`}
         >
-          <Link to="/" className="block hover:text-gray-200 py-2">Home</Link>
-          <Link to="/documentaries" className="block hover:text-gray-200 py-2">Documentaries</Link>
-          <Link to="/news" className="block hover:text-gray-200 py-2">News</Link>
-          <Link to="/reports" className="block hover:text-gray-200 py-2">Reports</Link>
-          <Link to="/interviews" className="block hover:text-gray-200 py-2">Interviews</Link>
-          <Link to="/movies" className="block hover:text-gray-200 py-2">Movies</Link>
-          <Link to="/photojournalism" className="block hover:text-gray-200 py-2">Photojournalism</Link>
-          <Link to="/admin" className="block hover:text-gray-200 py-2">Admin</Link>
+          <Link to="/" onClick={closeMenu} className="block hover:text-gray-200 py-2">Home</Link>
+          <Link to="/documentaries" onClick={closeMenu} className="block hover:text-gray-200 py-2">Documentaries</Link>
+          <Link to="/news" onClick={closeMenu} className="block hover:text-gray-200 py-2">News</Link>
+          <Link to="/reports" onClick={closeMenu} className="block hover:text-gray-200 py-2">Reports</Link>
+          <Link to="/interviews" onClick={closeMenu} className="block hover:text-gray-200 py-2">Interviews</Link>
+          <Link to="/movies" onClick={closeMenu} className="block hover:text-gray-200 py-2">Movies</Link>
+          <Link to="/photojournalism" onClick={closeMenu} className="block hover:text-gray-200 py-2">Photojournalism</Link>
+          <Link to="/admin" onClick={closeMenu} className="block hover:text-gray-200 py-2">Admin</Link>
         </nav>
       </div>
     </header>
