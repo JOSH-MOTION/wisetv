@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db } from '../../lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 // Import placeholder images from assets
 import pic1 from '../assets/pic1.jpg';
@@ -10,21 +12,28 @@ import pic5 from '../assets/pic5.jpg';
 const News = () => {
   const [posts, setPosts] = useState([]);
   const [expandedPost, setExpandedPost] = useState(null);
+  const [error, setError] = useState(null);
 
-  const fetchPosts = () => {
-    const storedPosts = JSON.parse(localStorage.getItem('wisetv-posts') || '[]');
-    const newsPosts = storedPosts.filter(post => post.category === 'news');
-    newsPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
-    setPosts(newsPosts);
+  const fetchPosts = async () => {
+    try {
+      const postsSnapshot = await getDocs(collection(db, 'posts'));
+      const postsData = postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const newsPosts = postsData
+        .filter(post => post.category === 'news')
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+      setPosts(newsPosts);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setError('Failed to fetch news posts: ' + error.message);
+      setPosts([]); // Fallback to mockPosts if Firestore fails
+    }
   };
 
   useEffect(() => {
     fetchPosts();
-    window.addEventListener('storage-updated', fetchPosts);
-    return () => window.removeEventListener('storage-updated', fetchPosts);
   }, []);
 
-  // If no posts are available, use mock data with images
+  // Mock data with images (used as fallback)
   const mockPosts = [
     {
       id: 1,
@@ -32,7 +41,7 @@ const News = () => {
       content:
         'The effects of climate change are becoming more evident with rising global temperatures, melting ice caps, and extreme weather events. Scientists urge immediate action to mitigate these impacts.',
       date: '2025-04-10T10:00:00',
-      category: 'Environment',
+      category: 'news',
       image: pic1,
     },
     {
@@ -41,7 +50,7 @@ const News = () => {
       content:
         'In a surprising turn of events, East Bengal and Kerala Blasters faced a tough defeat in the latest football match, leaving fans in shock.',
       date: '2025-04-09T15:30:00',
-      category: 'Sports',
+      category: 'news',
       image: pic2,
     },
     {
@@ -50,7 +59,7 @@ const News = () => {
       content:
         'Former UK Prime Minister Boris Johnson comments on the easing of lockdown restrictions and its implications for the economy and public health.',
       date: '2025-04-08T12:00:00',
-      category: 'Politics',
+      category: 'news',
       image: pic3,
     },
     {
@@ -59,7 +68,7 @@ const News = () => {
       content:
         'Advancements in robotics are paving the way for automation in industries, raising questions about the future of human labor.',
       date: '2025-04-07T09:00:00',
-      category: 'Technology',
+      category: 'news',
       image: pic4,
     },
     {
@@ -68,7 +77,7 @@ const News = () => {
       content:
         'Scientists have developed a new method to harness renewable energy, potentially revolutionizing the energy sector.',
       date: '2025-04-06T14:00:00',
-      category: 'Technology',
+      category: 'news',
       image: pic5,
     },
     {
@@ -77,7 +86,7 @@ const News = () => {
       content:
         'A recent report highlights the alarming amount of recycling waste being dumped each year, calling for better waste management systems.',
       date: '2025-04-05T11:00:00',
-      category: 'Environment',
+      category: 'news',
       image: pic1,
     },
     {
@@ -86,7 +95,7 @@ const News = () => {
       content:
         'A new initiative aims to combat vaccine misinformation by providing transparent and scientifically accurate information to the public.',
       date: '2025-04-04T13:00:00',
-      category: 'Education',
+      category: 'news',
       image: pic2,
     },
     {
@@ -95,7 +104,7 @@ const News = () => {
       content:
         'A roundup of the most anticipated events, innovations, and trends expected in 2025 across various sectors.',
       date: '2025-04-03T10:00:00',
-      category: 'World',
+      category: 'news',
       image: pic3,
     },
   ];
@@ -123,6 +132,9 @@ const News = () => {
 
   return (
     <div className="pt-20 bg-gray-50">
+      {/* Error Display */}
+      {error && <p className="text-red-600 text-center py-4">{error}</p>}
+
       {/* Hero Section (Main News) */}
       {mainNews && (
         <section className="relative bg-gray-900 text-white">
@@ -139,7 +151,7 @@ const News = () => {
                   <span className="text-sm text-gray-400">
                     {new Date(mainNews.date).toLocaleDateString()}
                   </span>
-                  <span className="text-sm text-gray-400">• By Admin</span>
+                  <span className="text-sm text-gray-400">• By {mainNews.author || 'Admin'}</span>
                 </div>
                 <button
                   onClick={() => toggleExpand(mainNews.id)}
@@ -169,6 +181,9 @@ const News = () => {
             src={mainNews.image}
             alt={mainNews.title}
             className="absolute inset-0 w-full h-full object-cover opacity-30"
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/1200x600?text=Image+Not+Found';
+            }}
           />
         </section>
       )}
@@ -188,6 +203,9 @@ const News = () => {
                 src={post.image}
                 alt={post.title}
                 className="w-full h-40 object-cover"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                }}
               />
               <div className="p-4">
                 <span className="inline-block bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded mb-2">
@@ -230,6 +248,9 @@ const News = () => {
                   src={post.image}
                   alt={post.title}
                   className="w-full h-48 object-cover"
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                  }}
                 />
                 <div className="p-4 flex-1">
                   <span className="inline-block bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded mb-2">
@@ -286,6 +307,9 @@ const News = () => {
                 src={post.image}
                 alt={post.title}
                 className="w-full h-40 object-cover"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                }}
               />
               <div className="p-4">
                 <span className="inline-block bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded mb-2">

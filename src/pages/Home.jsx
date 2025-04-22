@@ -1,9 +1,10 @@
-// src/components/Home.js
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { db } from '../../lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import WiseTvCarousel from '../components/Carousel';
 
-// Import local images for posts
+// Import local images for mock posts
 import pic1 from '../assets/pic1.jpg';
 import pic2 from '../assets/pic2.jpg';
 import pic3 from '../assets/pic3.jpg';
@@ -12,19 +13,24 @@ import pic5 from '../assets/pic5.jpg';
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
 
-  const fetchPosts = () => {
-    const storedPosts = JSON.parse(localStorage.getItem('wisetv-posts') || '[]');
-    setPosts(storedPosts);
+  const fetchPosts = async () => {
+    try {
+      const postsSnapshot = await getDocs(collection(db, 'posts'));
+      const postsData = postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setPosts(postsData);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setError('Failed to fetch posts: ' + error.message);
+      setPosts([]); // Fallback to mockPosts if Firestore fails
+    }
   };
 
   useEffect(() => {
     fetchPosts();
-    window.addEventListener('storage-updated', fetchPosts);
-    return () => window.removeEventListener('storage-updated', fetchPosts);
   }, []);
 
-  // Enhanced mock data to cover all categories, using local images
   const mockPosts = [
     {
       id: 1,
@@ -131,13 +137,21 @@ const Home = () => {
     'interviews',
     'movies',
     'photojournalism',
+    'environment',
+    'sports',
+    'politics',
+    'technology',
+    'education',
+    'world',
   ];
 
-  // Use mock data if no posts are available
   const displayPosts = posts.length > 0 ? posts : mockPosts;
 
   return (
     <div className="pt-20 bg-gray-50">
+      {/* Error Display */}
+      {error && <p className="text-red-600 text-center py-4">{error}</p>}
+
       {/* Hero Section with Carousel */}
       <WiseTvCarousel />
 
@@ -161,7 +175,7 @@ const Home = () => {
           Featured Content
         </h2>
         <div className="max-w-4xl mx-auto">
-          <div className="relative" style={{ paddingBottom: '56.25%' /* 16:9 aspect ratio */ }}>
+          <div className="relative" style={{ paddingBottom: '56.25%' }}>
             <iframe
               className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
               src="https://www.youtube.com/embed/8hP9D6kZseM"
