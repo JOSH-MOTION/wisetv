@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa";
 
 // Import placeholder images from assets
 import pic1 from '../assets/pic1.jpg';
@@ -32,6 +33,31 @@ const News = () => {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+
+
+  const socialLinks = [
+    {
+      name: "Facebook",
+      url: "https://facebook.com/YourPage",
+      icon: <FaFacebookF className="text-blue-600" />,
+    },
+    {
+      name: "X",
+      url: "https://x.com/wisetv010",
+      icon: <FaTwitter className="text-sky-500" />,
+    },
+    {
+      name: "Instagram",
+      url: "https://www.instagram.com/wisetv.2?igsh=MXZzczd4amoxbmE1cQ==",
+      icon: <FaInstagram className="text-pink-500" />,
+    },
+    {
+      name: "YouTube",
+      url: "https://www.youtube.com/@WiseTv.2",
+      icon: <FaYoutube className="text-red-600" />,
+    },
+  ];
 
   // Mock data with images (used as fallback)
   const mockPosts = [
@@ -279,16 +305,24 @@ const News = () => {
         <div className="lg:w-1/3">
           <h2 className="text-xl font-bold mb-4">Social Feed</h2>
           <div className="space-y-4">
-            {['Facebook', 'Twitter', 'Instagram', 'YouTube'].map((platform, index) => (
-              <div key={index} className="bg-gray-100 p-4 rounded-lg flex items-center gap-3">
-                <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                <div>
-                  <p className="text-sm font-semibold">{platform}</p>
-                  <p className="text-xs text-gray-600">{Math.floor(Math.random() * 10000)} Likes</p>
-                </div>
-              </div>
-            ))}
+      {socialLinks.map((platform, index) => (
+        <a
+          key={index}
+          href={platform.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-gray-100 p-4 rounded-lg flex items-center gap-3 hover:shadow-md transition-all duration-200"
+        >
+          <div className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm">
+            {platform.icon}
           </div>
+          <div>
+            <p className="text-sm font-semibold">{platform.name}</p>
+            <p className="text-xs text-gray-600">{Math.floor(Math.random() * 10000)} Likes</p>
+          </div>
+        </a>
+      ))}
+    </div>
         </div>
       </section>
 
