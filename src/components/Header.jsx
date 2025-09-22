@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import WiseLogo from '../assets/Wise.svg'; // Import the Wise.svg logo
+import WiseLogo from '../assets/WISE.svg'; // Import the Wise.svg logo
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
