@@ -1,3 +1,4 @@
+// src/components/Header.jsx - Updated without admin link
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -32,7 +33,9 @@ const Header = () => {
       }`}
     >
       <div className="container mx-auto flex justify-between items-center p-4">
-        <h1 className="text-2xl font-bold">WiseTv</h1>
+        <Link to="/" className="text-2xl font-bold hover:text-gray-200 transition-colors">
+          WiseTV
+        </Link>
         <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)}>
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -48,20 +51,61 @@ const Header = () => {
           </svg>
         </button>
         <nav
-          className={`lg:flex space-x-4 ${
+          className={`lg:flex space-x-6 ${
             isOpen
-              ? 'block absolute top-16 left-0 w-full bg-red-600 p-4'
+              ? 'block absolute top-16 left-0 w-full bg-red-600 bg-opacity-95 p-4 rounded-b-2xl shadow-lg backdrop-blur-sm'
               : 'hidden lg:block'
           }`}
         >
-          <Link to="/" onClick={closeMenu} className="block hover:text-gray-200 py-2">Home</Link>
-          <Link to="/documentaries" onClick={closeMenu} className="block hover:text-gray-200 py-2">Documentaries</Link>
-          <Link to="/news" onClick={closeMenu} className="block hover:text-gray-200 py-2">News</Link>
-          <Link to="/reports" onClick={closeMenu} className="block hover:text-gray-200 py-2">Reports</Link>
-          <Link to="/interviews" onClick={closeMenu} className="block hover:text-gray-200 py-2">Interviews</Link>
-          <Link to="/movies" onClick={closeMenu} className="block hover:text-gray-200 py-2">Movies</Link>
-          <Link to="/photojournalism" onClick={closeMenu} className="block hover:text-gray-200 py-2">Photojournalism</Link>
-          <Link to="/admin" onClick={closeMenu} className="block hover:text-gray-200 py-2">Admin</Link>
+          <Link 
+            to="/" 
+            onClick={closeMenu} 
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+          >
+            Home
+          </Link>
+          <Link 
+            to="/documentaries" 
+            onClick={closeMenu} 
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+          >
+            Documentaries
+          </Link>
+          <Link 
+            to="/news" 
+            onClick={closeMenu} 
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+          >
+            News
+          </Link>
+          <Link 
+            to="/reports" 
+            onClick={closeMenu} 
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+          >
+            Reports
+          </Link>
+          <Link 
+            to="/interviews" 
+            onClick={closeMenu} 
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+          >
+            Interviews
+          </Link>
+          <Link 
+            to="/movies" 
+            onClick={closeMenu} 
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+          >
+            Movies
+          </Link>
+          <Link 
+            to="/photojournalism" 
+            onClick={closeMenu} 
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+          >
+            Photojournalism
+          </Link>
         </nav>
       </div>
     </header>
