@@ -1,54 +1,264 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { db } from '../../lib/firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { Play, Share2 } from 'lucide-react';
+import Card from './Card'; // Import the reusable Card component
+import WiseLogo from '/WISE.svg'; // Import the Wise.svg logo
 
 const Interviews = () => {
   const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(6);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const fetchPosts = () => {
-    const storedPosts = JSON.parse(localStorage.getItem('wisetv-posts') || '[]');
-    setPosts(storedPosts.filter(post => post.category === 'interviews'));
-  };
+  // Mock data for fallback
+  const mockPosts = [
+    {
+      id: 'celebrity-spotlight',
+      title: 'Celebrity Spotlight',
+      content: 'Exclusive talks with industry stars sharing their journey.',
+      date: '2025-04-10T10:00:00',
+      image: 'https://images.unsplash.com/photo-1537815749002-de6a533c64b9',
+      author: 'John Doe',
+      category: 'interviews',
+      views: 1234,
+    },
+    {
+      id: 'directors-cut',
+      title: 'Director’s Cut',
+      content: 'Insights from top filmmakers on their creative process.',
+      date: '2025-04-09T15:30:00',
+      image: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef',
+      author: 'Jane Smith',
+      category: 'interviews',
+      views: 987,
+    },
+    {
+      id: 'behind-the-scenes',
+      title: 'Behind the Scenes',
+      content: 'Conversations with crew members who bring films to life.',
+      date: '2025-04-08T12:00:00',
+      image: 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e',
+      author: 'Alex Brown',
+      category: 'interviews',
+      views: 765,
+    },
+  ];
+
+  const fetchPosts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const q = query(collection(db, 'posts'), where('category', '==', 'interviews'));
+      const postsSnapshot = await getDocs(q);
+      const postsData = postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const sortedPosts = postsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setPosts(sortedPosts);
+    } catch (error) {
+      console.error('Error fetching interviews:', error);
+      setError('Failed to fetch interviews: ' + error.message);
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchPosts();
-    window.addEventListener('storage-updated', fetchPosts);
-    return () => window.removeEventListener('storage-updated', fetchPosts);
-  }, []);
+  }, [fetchPosts]);
+
+  // Pagination Logic
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const displayPosts = posts.length > 0 ? posts : mockPosts;
+  const filteredPosts = displayPosts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (selectedCategory === 'all' || post.category.toLowerCase() === selectedCategory)
+  );
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+  };
+
+  const sharePost = (platform, post) => {
+    const shareUrls = {
+      Facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/interviews/${post.id}`)}&quote=${encodeURIComponent(post.title)}`,
+      Twitter: `https://x.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`${window.location.origin}/interviews/${post.id}`)}`,
+      Instagram: 'https://www.instagram.com',
+      YouTube: 'https://www.youtube.com',
+    };
+    if (platform === 'Instagram' || platform === 'YouTube') {
+      alert(`Please share "${post.title}" manually on ${platform}!`);
+    } else {
+      window.open(shareUrls[platform], '_blank');
+    }
+  };
+
+  const categories = ['all', 'celebrity', 'filmmaker', 'artist', 'industry'];
 
   return (
-    <section className="container mx-auto py-10 pt-20">
-      <h3 className="text-2xl font-semibold mb-6 text-center">Interviews</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts.length > 0 ? (
-          posts.map(post => (
-            <div key={post.id} className="bg-white p-4 rounded-lg shadow-md">
-              {post.image ? (
-                <img src={post.image} alt={post.title} className="w-full h-48 object-cover rounded mb-4" />
-              ) : (
-                <img src="https://images.unsplash.com/photo-1537815749002-de6a533c64b9" alt="Interview" className="w-full h-48 object-cover rounded mb-4" />
-              )}
-              <h4 className="text-xl font-bold">{post.title}</h4>
-              <p className="text-gray-600">{post.content}</p>
-              <p className="text-sm text-gray-500 mt-2">{new Date(post.date).toLocaleString()}</p>
+    <section className="pt-20 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Error Display */}
+      {error && (
+        <div className="container mx-auto px-4 py-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        </div>
+      )}
+
+      {/* Header Section with Logo */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-red-600 bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center">
+          <div className="inline-flex items-center mb-6">
+            <Link to="/">
+              <img
+                src={WiseLogo}
+                alt="WiseTV Logo"
+                className="h-10 w-auto mr-3 drop-shadow-md"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/100x40/CCCCCC/FFFFFF?text=Logo';
+                }}
+              />
+            </Link>
+            <h3 className="text-3xl font-bold text-white">Interviews</h3>
+          </div>
+          <p className="text-lg text-red-100 max-w-2xl mx-auto">
+            Engage with exclusive conversations featuring industry leaders, artists, and visionaries.
+          </p>
+        </div>
+      </div>
+
+      {/* Search and Filter Bar */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white rounded-2xl shadow-lg p-4">
+          <div className="relative w-full md:w-1/2">
+            <input
+              type="text"
+              placeholder="Search interviews..."
+              value={searchQuery}
+              onChange={handleSearch}
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-600"
+            />
+            <Play className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+                className={`px-4 py-2 rounded-full font-medium ${
+                  selectedCategory === category
+                    ? 'bg-red-600 text-white'
+                    : 'bg-slate-200 text-slate-900 hover:bg-slate-300'
+                } transition-colors`}
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Posts Section */}
+      <div className="container mx-auto px-4 py-12">
+        <h4 className="text-2xl font-bold mb-6 text-slate-900">Latest Interviews</h4>
+        {loading ? (
+          <div className="animate-pulse">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl p-6">
+                  <div className="h-48 bg-slate-300 rounded-xl mb-4"></div>
+                  <div className="h-4 bg-slate-300 rounded mb-2"></div>
+                  <div className="h-3 bg-slate-200 rounded w-3/4"></div>
+                </div>
+              ))}
             </div>
-          ))
+          </div>
         ) : (
-          <>
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <img src="https://images.unsplash.com/photo-1537815749002-de6a533c64b9" alt="Celebrity" className="w-full h-48 object-cover rounded mb-4" />
-              <h4 className="text-xl font-bold">Celebrity Spotlight</h4>
-              <p className="text-gray-600">Exclusive talks with industry stars.</p>
-              <p className="text-sm text-gray-500 mt-2">{new Date().toLocaleString()}</p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <img src="https://images.unsplash.com/photo-1519345182560-3f2917c472ef" alt="Director" className="w-full h-48 object-cover rounded mb-4" />
-              <h4 className="text-xl font-bold">Director’s Cut</h4>
-              <p className="text-gray-600">Insights from top filmmakers.</p>
-              <p className="text-sm text-gray-500 mt-2">{new Date().toLocaleString()}</p>
-            </div>
-          </>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {currentPosts.length > 0 ? (
+              currentPosts.map((post) => (
+                <div key={post.id} className="relative">
+                  <Card
+                    item={{
+                      ...post,
+                      image: post.image || 'https://via.placeholder.com/300x200?text=Image+Not+Found',
+                    }}
+                    onToggleExpand={() => {}}
+                    isExpanded={false}
+                  />
+                  <img
+                    src={WiseLogo}
+                    alt="WiseTV Watermark"
+                    className="absolute bottom-6 right-6 h-6 w-auto opacity-30"
+                  />
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    {['Facebook', 'Twitter'].map((platform) => (
+                      <button
+                        key={platform}
+                        onClick={() => sharePost(platform, post)}
+                        className="bg-white/20 backdrop-blur-sm text-white p-2 rounded-full hover:bg-white/30 transition-all"
+                        aria-label={`Share on ${platform}`}
+                      >
+                        <Share2 className="w-4 h-4" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16">
+                <div className="w-24 h-24 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6">
+                  <Play className="w-12 h-12 text-slate-400" />
+                </div>
+                <h3 className="text-2xl font-semibold text-slate-900 mb-2">No Interviews Available</h3>
+                <p className="text-slate-600">Check back later for new interviews!</p>
+              </div>
+            )}
+          </div>
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {filteredPosts.length > 0 && (
+        <div className="container mx-auto px-4 flex justify-center mt-8">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            className="px-4 py-2 bg-red-600 text-white rounded-full disabled:opacity-50 hover:bg-red-700 transition-all"
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 text-lg font-semibold text-slate-900">
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            className="px-4 py-2 bg-red-600 text-white rounded-full disabled:opacity-50 hover:bg-red-700 transition-all"
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </section>
   );
 };
