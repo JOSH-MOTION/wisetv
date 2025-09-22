@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Play, Share2, Film } from 'lucide-react';
-import WiseLogo from '../assets/Wise.svg'; // Import the Wise.svg logo
+import WiseLogo from '/WISE.svg'; // Import the Wise.svg logo
 
 const Movies = () => {
   const [movies, setMovies] = useState([]);
