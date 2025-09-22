@@ -34,7 +34,7 @@ const Header = () => {
     >
       <div className="container mx-auto flex justify-between items-center p-4">
         <Link to="/" className="text-2xl font-bold hover:text-gray-200 transition-colors">
-          WiseTV
+          WGH TV
         </Link>
         <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)}>
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
