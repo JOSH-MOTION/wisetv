@@ -158,10 +158,10 @@ const WiseTvCarousel = () => {
         <div className="text-center text-white px-4">
           <div className="inline-flex items-center bg-red-600/20 backdrop-blur-sm border border-red-500/30 rounded-full px-6 py-2 mb-6">
             <Play className="w-4 h-4 mr-2 text-red-400" />
-            <span className="text-red-300 text-sm font-medium">WISE TV</span>
+            <span className="text-red-300 text-sm font-medium">WGH TV</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent drop-shadow-lg">
-            Welcome to WiseTV
+            Welcome to WGH TV
           </h1>
           <p className="text-lg md:text-2xl mb-6 text-slate-200 drop-shadow-lg max-w-2xl">
             Empowering the Next Generation with Inspiring Stories
