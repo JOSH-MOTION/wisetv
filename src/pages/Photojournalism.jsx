@@ -4,7 +4,7 @@ import { db } from '../../lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Play, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import Card from './Card'; // Import the reusable Card component
-import WiseLogo from '../assets/Wise.svg'; // Import the Wise.svg logo
+import WiseLogo from '../assets/WISE.svg'; // Import the Wise.svg logo
 
 // Import placeholder images
 import pic1 from '../assets/pic1.jpg';
