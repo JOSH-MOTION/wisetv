@@ -28,7 +28,7 @@ const Header = () => {
 
   return (
     <header
-      className={`bg-red-600 bg-opacity-90 text-white fixed z-30 top-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-7xl rounded-2xl shadow-xl transition-transform duration-300 ${
+      className={`bg-red-600 bg-opacity-90 text-white fixed z-30 top-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-7xl rounded-2xl shadow-xl transition-transform duration-300 mb-6 ${
         showNav ? 'translate-y-0' : '-translate-y-[150%]'
       }`}
     >

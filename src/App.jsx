@@ -1,4 +1,4 @@
-// src/App.jsx - Updated with protected admin routes
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
@@ -10,9 +10,7 @@ import Reports from './pages/Reports';
 import Interviews from './pages/Interviews';
 import Movies from './pages/Movies';
 import Photojournalism from './pages/Photojournalism';
-import AdminLogin from './components/AdminLogin';
-import ProtectedRoute from './components/ProtectedRoute';
-import ImprovedAdmin from './components/ImprovedAdmin';
+import Admin from './components/Admin'; // Import the Admin component you provided
 
 function App() {
   return (
@@ -38,16 +36,8 @@ function App() {
             </>
           } />
           
-          {/* Admin routes without header/footer */}
-          <Route path="/dashboard/login" element={<AdminLogin />} />
-          <Route 
-            path="/dashboard/admin" 
-            element={
-              <ProtectedRoute>
-                <ImprovedAdmin />
-              </ProtectedRoute>
-            } 
-          />
+          {/* Admin route without header/footer */}
+          <Route path="/admin" element={<Admin />} /> {/* Use the Admin component here */}
         </Routes>
       </div>
     </Router>
