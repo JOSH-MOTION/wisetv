@@ -10,14 +10,17 @@ import Reports from './pages/Reports';
 import Interviews from './pages/Interviews';
 import Movies from './pages/Movies';
 import Photojournalism from './pages/Photojournalism';
-import Admin from './components/Admin'; // Import the Admin component you provided
+import Admin from './components/Admin';
 
 function App() {
   return (
     <Router>
       <div className="App min-h-screen flex flex-col">
         <Routes>
-          {/* Public routes with header */}
+          {/* Admin route without header/footer */}
+          <Route path="/admin" element={<Admin />} />
+          
+          {/* Public routes with header and footer */}
           <Route path="/*" element={
             <>
               <Header />
@@ -35,9 +38,6 @@ function App() {
               <Footer />
             </>
           } />
-          
-          {/* Admin route without header/footer */}
-          <Route path="/admin" element={<Admin />} /> {/* Use the Admin component here */}
         </Routes>
       </div>
     </Router>

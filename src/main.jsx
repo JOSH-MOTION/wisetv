@@ -11,6 +11,7 @@ import Interviews from './pages/Interviews';
 import Movies from './pages/Movies';
 import Photojournalism from './pages/Photojournalism';
 import Admin from './components/Admin';
+import Footer from './components/Footer'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -26,9 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/photojournalism" element={<Photojournalism />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
-      <footer className="bg-gray-900 text-white p-4 text-center">
-        <p>© 2025 WiseTv. All rights reserved.</p>
-      </footer>
+     <Footer />
     </BrowserRouter>
   </React.StrictMode>
 );

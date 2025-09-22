@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { db } from '../../lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import WiseTvCarousel from '../components/Carousel';
+import Card from './Card'; // Import the reusable Card component
 
 // Import local images for mock posts
 import pic1 from '../assets/pic1.jpg';
@@ -13,10 +14,13 @@ import pic5 from '../assets/pic5.jpg';
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
+  const [expandedPost, setExpandedPost] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
+      setLoading(true);
       const postsSnapshot = await getDocs(collection(db, 'posts'));
       const postsData = postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setPosts(postsData);
@@ -24,12 +28,18 @@ const Home = () => {
       console.error('Error fetching posts:', error);
       setError('Failed to fetch posts: ' + error.message);
       setPosts([]); // Fallback to mockPosts if Firestore fails
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [fetchPosts]);
+
+  const toggleExpand = useCallback((postId) => {
+    setExpandedPost(expandedPost === postId ? null : postId);
+  }, [expandedPost]);
 
   const mockPosts = [
     {
@@ -39,6 +49,8 @@ const Home = () => {
       date: '2025-04-10T10:00:00',
       category: 'documentaries',
       image: pic1,
+      author: 'Green Energy Films',
+      views: 12345,
     },
     {
       id: 2,
@@ -47,6 +59,8 @@ const Home = () => {
       date: '2025-04-09T15:30:00',
       category: 'news',
       image: pic2,
+      author: 'Global News Network',
+      views: 9876,
     },
     {
       id: 3,
@@ -55,6 +69,8 @@ const Home = () => {
       date: '2025-04-08T12:00:00',
       category: 'reports',
       image: pic3,
+      author: 'City Life Media',
+      views: 7654,
     },
     {
       id: 4,
@@ -63,6 +79,8 @@ const Home = () => {
       date: '2025-04-07T09:00:00',
       category: 'interviews',
       image: pic4,
+      author: 'Tech Talks',
+      views: 5432,
     },
     {
       id: 5,
@@ -71,6 +89,8 @@ const Home = () => {
       date: '2025-04-06T14:00:00',
       category: 'movies',
       image: pic5,
+      author: 'Future Films',
+      views: 8765,
     },
     {
       id: 6,
@@ -79,6 +99,8 @@ const Home = () => {
       date: '2025-04-05T11:00:00',
       category: 'photojournalism',
       image: pic1,
+      author: 'Resilience Media',
+      views: 6543,
     },
     {
       id: 7,
@@ -87,6 +109,8 @@ const Home = () => {
       date: '2025-04-04T10:00:00',
       category: 'documentaries',
       image: pic2,
+      author: 'Ocean Guardians',
+      views: 9876,
     },
     {
       id: 8,
@@ -95,6 +119,8 @@ const Home = () => {
       date: '2025-04-03T15:00:00',
       category: 'news',
       image: pic3,
+      author: 'Health Tech News',
+      views: 4321,
     },
     {
       id: 9,
@@ -103,6 +129,8 @@ const Home = () => {
       date: '2025-04-02T12:00:00',
       category: 'reports',
       image: pic4,
+      author: 'Workforce Insights',
+      views: 7654,
     },
     {
       id: 10,
@@ -111,6 +139,8 @@ const Home = () => {
       date: '2025-04-01T09:00:00',
       category: 'interviews',
       image: pic5,
+      author: 'Climate Voices',
+      views: 5432,
     },
     {
       id: 11,
@@ -119,6 +149,8 @@ const Home = () => {
       date: '2025-03-31T14:00:00',
       category: 'movies',
       image: pic1,
+      author: 'Adventure Studios',
+      views: 8765,
     },
     {
       id: 12,
@@ -127,6 +159,8 @@ const Home = () => {
       date: '2025-03-30T11:00:00',
       category: 'photojournalism',
       image: pic2,
+      author: 'Urban Chronicles',
+      views: 6543,
     },
   ];
 
@@ -148,9 +182,15 @@ const Home = () => {
   const displayPosts = posts.length > 0 ? posts : mockPosts;
 
   return (
-    <div className="pt-20 bg-gray-50">
+    <div className="pt-20 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Error Display */}
-      {error && <p className="text-red-600 text-center py-4">{error}</p>}
+      {error && (
+        <div className="container mx-auto px-4 py-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        </div>
+      )}
 
       {/* Hero Section with Carousel */}
       <WiseTvCarousel />
@@ -160,7 +200,7 @@ const Home = () => {
         <h2 className="text-3xl font-bold mb-6 border-b-2 border-red-600 inline-block">
           About WISE TV
         </h2>
-        <p className="text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-slate-600 max-w-3xl mx-auto leading-relaxed">
           WISE TV is a pioneering online media platform dedicated to empowering the next generation
           and amplifying the voices of the masses. Our mission is to become a leading TV station that
           drives positive growth and impacts society through informative, inspiring, and engaging
@@ -183,6 +223,7 @@ const Home = () => {
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
+              loading="lazy"
             ></iframe>
           </div>
         </div>
@@ -190,110 +231,91 @@ const Home = () => {
 
       {/* Latest Updates Section */}
       <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold mb-8 text-center border-b-2 border-red-600 inline-block">
-          Latest Updates
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayPosts.slice(0, 6).map(post => (
-            <Link
-              key={post.id}
-              to={`/${post.category}`}
-              className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105"
-            >
-              <img
-                src={post.image}
-                alt={post.title}
-                className="w-full h-48 object-cover"
-                onError={(e) => {
-                  console.log(`Failed to load post image: ${post.title}`);
-                  e.target.src = 'https://via.placeholder.com/300x200/CCCCCC/FFFFFF?text=Image+Not+Found';
-                }}
-              />
-              <div className="p-4">
-                <span className="inline-block bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded mb-2">
-                  {post.category.toUpperCase()}
-                </span>
-                <h4 className="text-xl font-bold mb-2 line-clamp-2">{post.title}</h4>
-                <p className="text-gray-600 line-clamp-2">{post.content}</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  {new Date(post.date).toLocaleDateString()}
-                </p>
-                <span className="text-red-600 text-sm mt-2 block font-semibold hover:underline">
-                  Read More
-                </span>
-              </div>
-            </Link>
-          ))}
+        <div className="flex items-center justify-between mb-12">
+          <h2 className="text-3xl font-bold text-slate-900 mb-2">Latest Updates</h2>
+          <Link to="/all" className="text-red-600 hover:underline font-semibold">
+            View All
+          </Link>
         </div>
+        {loading ? (
+          <div className="animate-pulse">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl p-6">
+                  <div className="h-48 bg-slate-300 rounded-xl mb-4"></div>
+                  <div className="h-4 bg-slate-300 rounded mb-2"></div>
+                  <div className="h-3 bg-slate-200 rounded w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayPosts.slice(0, 6).map(post => (
+              <Card
+                key={post.id}
+                item={post}
+                onToggleExpand={toggleExpand}
+                isExpanded={expandedPost === post.id}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Categorized Sections */}
       {categories.map(category => (
         <section key={category} className="container mx-auto px-4 py-16">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold capitalize border-b-2 border-red-600 inline-block">
+          <div className="flex justify-between items-center mb-12">
+            <h3 className="text-2xl font-bold capitalize text-slate-900">
               {category}
             </h3>
             <Link to={`/${category}`} className="text-red-600 hover:underline font-semibold">
               View All
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayPosts
-              .filter(post => post.category === category)
-              .slice(0, 3)
-              .map(post => (
-                <Link
-                  key={post.id}
-                  to={`/${category}`}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105"
-                >
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      console.log(`Failed to load post image: ${post.title}`);
-                      e.target.src = 'https://via.placeholder.com/300x200/CCCCCC/FFFFFF?text=Image+Not+Found';
-                    }}
-                  />
-                  <div className="p-4">
-                    <span className="inline-block bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded mb-2">
-                      {category.toUpperCase()}
-                    </span>
-                    <h4 className="text-xl font-bold mb-2 line-clamp-2">{post.title}</h4>
-                    <p className="text-gray-600 line-clamp-2">{post.content}</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      {new Date(post.date).toLocaleDateString()}
-                    </p>
+          {loading ? (
+            <div className="animate-pulse">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-2xl p-6">
+                    <div className="h-48 bg-slate-300 rounded-xl mb-4"></div>
+                    <div className="h-4 bg-slate-300 rounded mb-2"></div>
+                    <div className="h-3 bg-slate-200 rounded w-3/4"></div>
                   </div>
-                </Link>
-              ))}
-            {displayPosts.filter(post => post.category === category).length === 0 && (
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <img
-                  src={`https://via.placeholder.com/300x200?text=${category}`}
-                  alt={category}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <span className="inline-block bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded mb-2">
-                    {category.toUpperCase()}
-                  </span>
-                  <h4 className="text-xl font-bold mb-2">
-                    {`Latest in ${category.charAt(0).toUpperCase() + category.slice(1)}`}
-                  </h4>
-                  <p className="text-gray-600">Exciting {category} coming soon!</p>
-                  <Link
-                    to={`/${category}`}
-                    className="text-red-600 text-sm mt-2 block font-semibold hover:underline"
-                  >
-                    View More
-                  </Link>
-                </div>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {displayPosts
+                .filter(post => post.category === category)
+                .slice(0, 3)
+                .map(post => (
+                  <Card
+                    key={post.id}
+                    item={post}
+                    onToggleExpand={toggleExpand}
+                    isExpanded={expandedPost === post.id}
+                  />
+                ))}
+              {displayPosts.filter(post => post.category === category).length === 0 && (
+                <Card
+                  item={{
+                    id: `placeholder-${category}`,
+                    title: `Latest in ${category.charAt(0).toUpperCase() + category.slice(1)}`,
+                    content: `Exciting ${category} content coming soon!`,
+                    category,
+                    image: `https://via.placeholder.com/300x200?text=${category}`,
+                    date: new Date().toISOString(),
+                    author: 'WISE TV',
+                  }}
+                  onToggleExpand={toggleExpand}
+                  isExpanded={expandedPost === `placeholder-${category}`}
+                />
+              )}
+            </div>
+          )}
         </section>
       ))}
     </div>

@@ -1,6 +1,6 @@
-// src/components/Header.jsx - Updated without admin link
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import WiseLogo from '../assets/Wise.svg'; // Import the Wise.svg logo
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,7 +9,6 @@ const Header = () => {
   // Scroll listener
   useEffect(() => {
     const handleScroll = () => {
-      // Hide navbar only when scrolling down
       if (window.scrollY > 0) {
         setShowNav(false);
       } else {
@@ -33,8 +32,16 @@ const Header = () => {
       }`}
     >
       <div className="container mx-auto flex justify-between items-center p-4">
-        <Link to="/" className="text-2xl font-bold hover:text-gray-200 transition-colors">
-          WGH TV
+        <Link to="/" className="flex items-center">
+          <img
+            src={WiseLogo}
+            alt="WiseTV Logo"
+            className="h-8 w-auto"
+            onError={(e) => {
+              console.log('Failed to load WiseTV logo');
+              e.target.src = 'https://via.placeholder.com/100x40/CCCCCC/FFFFFF?text=Logo';
+            }}
+          />
         </Link>
         <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)}>
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
