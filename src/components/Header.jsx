@@ -69,7 +69,7 @@ const Header = () => {
             onClick={closeMenu} 
             className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
           >
-            Hom
+            Home
           </Link>
           <Link 
             to="/documentaries" 
