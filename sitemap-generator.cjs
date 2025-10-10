@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 // NOTE: Replace this with your actual production domain!
-const BASE_URL = 'https://www.wisetv.com';
+const BASE_URL = 'https://w-ghtv.com/';
 
 // Define the static routes of your application.
 // For dynamic routes (like /films/123), you would need to fetch them from a data source.
