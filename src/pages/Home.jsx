@@ -198,7 +198,7 @@ const Home = () => {
       {/* About WISE TV Section */}
       <section className="container mx-auto px-4 py-16 text-center">
         <h2 className="text-3xl font-bold mb-6 border-b-2 border-red-600 inline-block">
-          About WISE TV
+          About W-GHTV
         </h2>
         <p className="text-slate-600 max-w-3xl mx-auto leading-relaxed">
           WISE TV is a pioneering online media platform dedicated to empowering the next generation

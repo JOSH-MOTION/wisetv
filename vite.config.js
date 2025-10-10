@@ -33,7 +33,7 @@ export default defineConfig({
       ],
     }),
   ],
-  // base: '/wisetv/', 
+  // base: '/w-ghtv/', 
   build: {
     // Keep the chunk size warning limit adjustment
     chunkSizeWarningLimit: 1000, 
