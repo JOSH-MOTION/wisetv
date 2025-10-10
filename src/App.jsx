@@ -18,7 +18,7 @@ function App() {
       <div className="App min-h-screen flex flex-col">
         <Routes>
           {/* Admin route without header/footer */}
-          <Route path="/admin" element={<Admin />} />
+          
           
           {/* Public routes with header and footer */}
           <Route path="/*" element={
@@ -33,6 +33,7 @@ function App() {
                   <Route path="/interviews" element={<Interviews />} />
                   <Route path="/movies" element={<Movies />} />
                   <Route path="/photojournalism" element={<Photojournalism />} />
+                  <Route path="/admin" element={<Admin />} />
                 </Routes>
               </main>
               <Footer />

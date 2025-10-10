@@ -69,7 +69,7 @@ const Header = () => {
             onClick={closeMenu} 
             className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
           >
-            Home
+            Hom
           </Link>
           <Link 
             to="/documentaries" 
@@ -112,6 +112,13 @@ const Header = () => {
             className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
           >
             Photojournalism
+          </Link>
+          <Link 
+            to="/admin" 
+            onClick={closeMenu} 
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+          >
+            Admin
           </Link>
         </nav>
       </div>
