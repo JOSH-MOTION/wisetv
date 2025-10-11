@@ -215,18 +215,19 @@ const Home = () => {
           Featured Content
         </h2>
         <div className="max-w-4xl mx-auto">
-          <div className="relative" style={{ paddingBottom: '56.25%' }}>
-            <iframe
-              className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
-              src="https://www.youtube.com/embed/8hP9D6kZseM"
-              title="Featured Video"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="lazy"
-            ></iframe>
-          </div>
-        </div>
+  <div className="relative" style={{ paddingBottom: '56.25%' }}>
+    <iframe
+      className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+      src="https://www.youtube.com/embed/q-eWGrfaTmc?si=4T0082sGwNLVPL-V"
+      title="Featured Video"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+      loading="lazy"
+    ></iframe>
+  </div>
+</div>
+
       </section>
 
       {/* Latest Updates Section */}
