@@ -25,7 +25,7 @@ const News = () => {
     { name: 'Facebook', url: 'https://facebook.com/YourPage', icon: <FaFacebookF className="text-blue-600" /> },
     { name: 'X', url: 'https://x.com/wisetv010', icon: <FaTwitter className="text-sky-500" /> },
     { name: 'Instagram', url: 'https://www.instagram.com/wisetv.2?igsh=MXZzczd4amoxbmE1cQ==', icon: <FaInstagram className="text-pink-500" /> },
-    { name: 'YouTube', url: 'https://www.youtube.com/@WiseTv.2', icon: <FaYoutube className="text-red-600" /> },
+    { name: 'YouTube', url: 'https://www.youtube.com/@WiseTv.2', icon: <FaYoutube className="text-[#fc561c]" /> },
   ];
 
   const mockPosts = [
@@ -180,7 +180,7 @@ const News = () => {
       {/* Error Display */}
       {error && (
         <div className="container mx-auto px-4 py-4">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="bg-[#fc561c]50 border border-[#fc561c] text-[#fc561c] px-4 py-3 rounded-lg">
             {error}
           </div>
         </div>
@@ -192,9 +192,9 @@ const News = () => {
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop')] bg-cover bg-center opacity-20"></div>
           <div className="relative container mx-auto px-4 py-20">
             <div className="max-w-4xl mx-auto">
-              <div className="inline-flex items-center bg-red-600/20 backdrop-blur-sm border border-red-500/30 rounded-full px-6 py-2 mb-6">
-                <Play className="w-4 h-4 mr-2 text-red-400" />
-                <span className="text-red-300 text-sm font-medium">FEATURED NEWS</span>
+              <div className="inline-flex items-center bg-[#fc561c]/20 backdrop-blur-sm border border-[#fc561c]/30 rounded-full px-6 py-2 mb-6">
+                <Play className="w-4 h-4 mr-2 text-[#fc561c]" />
+                <span className="text-[#fc561c] text-sm font-medium">FEATURED NEWS</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
                 {filteredPosts[0].title}
@@ -228,7 +228,7 @@ const News = () => {
               </div>
               <button
                 onClick={() => toggleExpand(filteredPosts[0].id)}
-                className="inline-flex items-center bg-red-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-all duration-300"
+                className="inline-flex items-center bg-[#fc561c] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#fc561c] transition-all duration-300"
               >
                 {expandedPost === filteredPosts[0].id ? 'Read Less' : 'Read More'}
               </button>
@@ -251,7 +251,7 @@ const News = () => {
               placeholder="Search news..."
               value={searchQuery}
               onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
             />
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
           </div>
@@ -262,7 +262,7 @@ const News = () => {
                 onClick={() => handleCategoryChange(category)}
                 className={`px-4 py-2 rounded-full font-medium ${
                   selectedCategory === category
-                    ? 'bg-red-600 text-white'
+                    ? 'bg-[#fc561c] text-white'
                     : 'bg-slate-200 text-slate-900 hover:bg-slate-300'
                 } transition-colors`}
               >
@@ -277,8 +277,8 @@ const News = () => {
       <section className="bg-slate-800 text-white py-3">
         <div className="container mx-auto px-4">
           <div className="flex items-center overflow-hidden">
-            <span className="inline-flex items-center bg-red-600/20 backdrop-blur-sm border border-red-500/30 rounded-full px-4 py-1 mr-4">
-              <Play className="w-4 h-4 mr-2 text-red-400" />
+            <span className="inline-flex items-center bg-[#fc561c]/20 backdrop-blur-sm border border-[#fc561c]/30 rounded-full px-4 py-1 mr-4">
+              <Play className="w-4 h-4 mr-2 text-[#fc561c]" />
               Trending
             </span>
             <div className="animate-marquee whitespace-nowrap">
@@ -349,12 +349,12 @@ const News = () => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-full text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="flex-1 px-4 py-3 rounded-full text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
               required
             />
             <button
               type="submit"
-              className="bg-red-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors"
+              className="bg-[#fc561c] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#fc561c] transition-colors"
             >
               Subscribe
             </button>

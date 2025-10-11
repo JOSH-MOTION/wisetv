@@ -149,7 +149,7 @@ const Photojournalism = () => {
       {/* Error Display */}
       {error && (
         <div className="container mx-auto px-4 py-4">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="bg-[#fc561c]50 border border-[#fc561c] text-[#fc561c] px-4 py-3 rounded-lg">
             {error}
           </div>
         </div>
@@ -157,7 +157,7 @@ const Photojournalism = () => {
 
       {/* Header Section with Logo */}
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-600 bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center">
+        <div className="bg-[#fc561c] bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center">
           <div className="inline-flex items-center mb-6">
             <Link to="/">
               <img
@@ -171,7 +171,7 @@ const Photojournalism = () => {
             </Link>
             <h3 className="text-3xl font-bold text-white">Photojournalism</h3>
           </div>
-          <p className="text-lg text-red-100 max-w-2xl mx-auto">
+          <p className="text-lg text-[#fc561c] max-w-2xl mx-auto">
             Discover powerful stories told through the lens of our photojournalists, capturing moments that inspire and inform.
           </p>
         </div>
@@ -186,7 +186,7 @@ const Photojournalism = () => {
               placeholder="Search photos..."
               value={searchQuery}
               onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
             />
             <Play className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
           </div>
@@ -197,7 +197,7 @@ const Photojournalism = () => {
                 onClick={() => handleCategoryChange(category)}
                 className={`px-4 py-2 rounded-full font-medium ${
                   selectedCategory === category
-                    ? 'bg-red-600 text-white'
+                    ? 'bg-[#fc561c] text-white'
                     : 'bg-slate-200 text-slate-900 hover:bg-slate-300'
                 } transition-colors`}
               >
@@ -252,7 +252,7 @@ const Photojournalism = () => {
         <div className="container mx-auto px-4 flex justify-center mt-8">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
-            className="px-4 py-2 bg-red-600 text-white rounded-full disabled:opacity-50 hover:bg-red-700 transition-all"
+            className="px-4 py-2 bg-[#fc561c] text-white rounded-full disabled:opacity-50 hover:bg-[#fc561c] transition-all"
             disabled={currentPage === 1}
           >
             Previous
@@ -262,7 +262,7 @@ const Photojournalism = () => {
           </span>
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            className="px-4 py-2 bg-red-600 text-white rounded-full disabled:opacity-50 hover:bg-red-700 transition-all"
+            className="px-4 py-2 bg-[#fc561c] text-white rounded-full disabled:opacity-50 hover:bg-[#fc561c] transition-all"
             disabled={currentPage === totalPages}
           >
             Next
@@ -317,7 +317,7 @@ const Photojournalism = () => {
           <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-6 max-w-3xl w-full mx-4">
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-all"
+              className="absolute top-4 right-4 bg-[#fc561c] text-white p-2 rounded-full hover:bg-[#fc561c] transition-all"
               aria-label="Close modal"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

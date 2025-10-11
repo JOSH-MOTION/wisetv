@@ -27,7 +27,7 @@ const Header = () => {
 
   return (
     <header
-      className={`bg-red-600 bg-opacity-90 text-white fixed z-30 top-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-7xl rounded-2xl shadow-xl transition-transform duration-300 mb-6 ${
+      className={`bg-[#fc561c] bg-opacity-90 text-white fixed z-30 top-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-7xl rounded-2xl shadow-xl transition-transform duration-300 mb-6 ${
         showNav ? 'translate-y-0' : '-translate-y-[150%]'
       }`}
     >
@@ -60,56 +60,56 @@ const Header = () => {
         <nav
           className={`lg:flex space-x-6 ${
             isOpen
-              ? 'block absolute top-16 left-0 w-full bg-red-600 bg-opacity-95 p-4 rounded-b-2xl shadow-lg backdrop-blur-sm'
+              ? 'block absolute top-16 left-0 w-full bg-[#fc561c] bg-opacity-95 p-4 rounded-b-2xl shadow-lg backdrop-blur-sm'
               : 'hidden lg:block'
           }`}
         >
           <Link 
             to="/" 
             onClick={closeMenu} 
-            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-[#fc561c]"
           >
             Home
           </Link>
           <Link 
             to="/documentaries" 
             onClick={closeMenu} 
-            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-[#fc561c]"
           >
             Documentaries
           </Link>
           <Link 
             to="/news" 
             onClick={closeMenu} 
-            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-[#fc561c]"
           >
             News
           </Link>
           <Link 
             to="/reports" 
             onClick={closeMenu} 
-            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-[#fc561c]"
           >
             Reports
           </Link>
           <Link 
             to="/interviews" 
             onClick={closeMenu} 
-            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-[#fc561c]"
           >
             Interviews
           </Link>
           <Link 
             to="/movies" 
             onClick={closeMenu} 
-            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-[#fc561c]"
           >
             Movies
           </Link>
           <Link 
             to="/photojournalism" 
             onClick={closeMenu} 
-            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-red-700"
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-[#fc561c]"
           >
             Photojournalism
           </Link>

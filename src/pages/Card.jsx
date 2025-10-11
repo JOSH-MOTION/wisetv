@@ -22,7 +22,7 @@ const Card = ({ item, onToggleExpand, isExpanded }) => {
           <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
             <Link
               to={`/${item.category}`}
-              className="flex items-center bg-red-600 text-white px-4 py-2 rounded-full font-medium hover:bg-red-700 transition-colors"
+              className="flex items-center bg-[#fc561c] text-white px-4 py-2 rounded-full font-medium hover:bg-[#fc561c] transition-colors"
             >
               <Play className="w-4 h-4 mr-2" />
               View Now
@@ -45,7 +45,7 @@ const Card = ({ item, onToggleExpand, isExpanded }) => {
       {/* Content */}
       <div className="p-6">
         <div className="flex items-start justify-between mb-3">
-          <span className="inline-flex items-center bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
+          <span className="inline-flex items-center bg-[#fc561c] text-white px-3 py-1 rounded-full text-xs font-semibold">
             {item.category.toUpperCase()}
           </span>
           {item.views && (
@@ -56,7 +56,7 @@ const Card = ({ item, onToggleExpand, isExpanded }) => {
           )}
         </div>
 
-        <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-red-600 transition-colors">
+        <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#fc561c] transition-colors">
           {item.title}
         </h3>
 

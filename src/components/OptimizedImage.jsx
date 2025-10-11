@@ -126,7 +126,7 @@ const OptimizedImage = ({
       {/* Loading indicator for non-placeholder mode */}
       {!placeholder && !isLoaded && !hasError && isInView && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-red-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-[#fc561c]"></div>
         </div>
       )}
     </div>

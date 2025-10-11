@@ -109,9 +109,9 @@ const Documentaries = () => {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=1200&h=600&fit=crop')] bg-cover bg-center opacity-20"></div>
         <div className="relative container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center bg-red-600/20 backdrop-blur-sm border border-red-500/30 rounded-full px-6 py-2 mb-6">
-              <Play className="w-4 h-4 mr-2 text-red-400" />
-              <span className="text-red-300 text-sm font-medium">DOCUMENTARY COLLECTION</span>
+            <div className="inline-flex items-center bg-[#fc561c]/20 backdrop-blur-sm border border-[#fc561c]/30 rounded-full px-6 py-2 mb-6">
+              <Play className="w-4 h-4 mr-2 text-[#fc561c]" />
+              <span className="text-[#fc561c] text-sm font-medium">DOCUMENTARY COLLECTION</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
               Stories That Change Perspectives
@@ -120,7 +120,7 @@ const Documentaries = () => {
               Dive deep into compelling narratives that explore the most pressing issues of our time, told through the lens of award-winning documentarians.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="group inline-flex items-center bg-red-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+              <button className="group inline-flex items-center bg-[#fc561c] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#fc561c] transition-all duration-300 shadow-lg hover:shadow-xl">
                 <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                 Watch Featured
               </button>
@@ -137,7 +137,7 @@ const Documentaries = () => {
       {/* Error Display */}
       {error && (
         <div className="container mx-auto px-4 py-4">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="bg-[#fc561c]50 border border-[#fc561c] text-[#fc561c] px-4 py-3 rounded-lg">
             {error}
           </div>
         </div>
@@ -175,7 +175,7 @@ const Documentaries = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                    <button className="flex items-center bg-red-600 text-white px-4 py-2 rounded-full font-medium hover:bg-red-700 transition-colors">
+                    <button className="flex items-center bg-[#fc561c] text-white px-4 py-2 rounded-full font-medium hover:bg-[#fc561c] transition-colors">
                       <Play className="w-4 h-4 mr-2" />
                       Watch Now
                     </button>
@@ -199,7 +199,7 @@ const Documentaries = () => {
               {/* Content */}
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
-                  <span className="inline-flex items-center bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
+                  <span className="inline-flex items-center bg-[#fc561c] text-[#fc561c] px-3 py-1 rounded-full text-xs font-semibold">
                     DOCUMENTARY
                   </span>
                   {post.views && (
@@ -210,7 +210,7 @@ const Documentaries = () => {
                   )}
                 </div>
                 
-                <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-red-600 transition-colors">
+                <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#fc561c] transition-colors">
                   {post.title}
                 </h3>
                 
@@ -261,7 +261,7 @@ const Documentaries = () => {
           <p className="text-slate-300 mb-8 max-w-2xl mx-auto">
             Share your story with our global audience. We're always looking for compelling documentaries that spark conversation and drive change.
           </p>
-          <button className="bg-red-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors">
+          <button className="bg-[#fc561c] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#fc561c] transition-colors">
             Submit Your Film
           </button>
         </div>

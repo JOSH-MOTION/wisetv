@@ -90,16 +90,16 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage }) => {
           <button
             type="button"
             onClick={clearPreview}
-            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+            className="absolute top-2 right-2 bg-[#fc561c] text-white rounded-full p-1 hover:bg-[#fc561c] transition-colors"
           >
             <X size={16} />
           </button>
         </div>
       ) : (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-red-400 transition-colors">
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#fc561c] transition-colors">
           <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
           <label className="cursor-pointer">
-            <span className="text-sm font-medium text-red-600 hover:text-red-500">
+            <span className="text-sm font-medium text-[#fc561c] hover:text-[#fc561c]">
               {uploading ? 'Uploading...' : 'Click to upload'}
             </span>
             <input
@@ -116,7 +116,7 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage }) => {
 
       {uploading && (
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div className="bg-red-600 h-2 rounded-full animate-pulse w-1/2"></div>
+          <div className="bg-[#fc561c] h-2 rounded-full animate-pulse w-1/2"></div>
         </div>
       )}
     </div>
@@ -350,7 +350,7 @@ const Admin = () => {
         <div className="max-w-md mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="text-center mb-8">
-              <div className="bg-red-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-[#fc561c] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
@@ -360,8 +360,8 @@ const Admin = () => {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                <p className="text-red-600 text-sm">{error}</p>
+              <div className="bg-[#fc561c] border border-[#fc561c] rounded-lg p-4 mb-6">
+                <p className="text-[#fc561c] text-sm">{error}</p>
               </div>
             )}
 
@@ -372,7 +372,7 @@ const Admin = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
                   placeholder="Enter your email"
                   required
                 />
@@ -385,7 +385,7 @@ const Admin = () => {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                    className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
                     placeholder="Enter your password"
                     required
                   />
@@ -402,7 +402,7 @@ const Admin = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-red-600 text-white p-3 rounded-lg font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-[#fc561c] text-white p-3 rounded-lg font-medium hover:bg-[#fc561c] focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {loading ? <Loader className="animate-spin mr-2" size={20} /> : null}
                 {loading ? 'Signing in...' : 'Sign In'}
@@ -420,7 +420,7 @@ const Admin = () => {
             </div>
             <button
               onClick={handleLogout}
-              className="mt-4 md:mt-0 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
+              className="mt-4 md:mt-0 bg-[#fc561c] text-white px-6 py-2 rounded-lg hover:bg-[#fc561c] transition-colors flex items-center"
             >
               <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H5v16h9v-2h2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2 0 012-2h9z"/>
@@ -431,8 +431,8 @@ const Admin = () => {
 
           {/* Messages */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-600">{error}</p>
+            <div className="bg-[#fc561c] border border-[#fc561c] rounded-lg p-4 mb-6">
+              <p className="text-[#fc561c]">{error}</p>
             </div>
           )}
 
@@ -445,7 +445,7 @@ const Admin = () => {
           {/* Form */}
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-8" ref={formRef}>
             <div className="flex items-center mb-6">
-              <Plus className="mr-3 text-red-600" size={24} />
+              <Plus className="mr-3 text-[#fc561c]" size={24} />
               <h2 className="text-2xl font-semibold text-gray-900">
                 {editingPost ? 'Edit Post' : 'Create New Post'}
               </h2>
@@ -459,7 +459,7 @@ const Admin = () => {
                   <select
                     value={postType}
                     onChange={(e) => setPostType(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent"
                     disabled={editingPost}
                   >
                     <option value="regular">Regular Post</option>
@@ -470,13 +470,13 @@ const Admin = () => {
                 {/* Title */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title {postType === 'regular' && <span className="text-red-500">*</span>}
+                    Title {postType === 'regular' && <span className="text-[#fc561c]">*</span>}
                   </label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent"
                     placeholder={postType === 'social' ? 'Optional (auto-generated if empty)' : 'Enter post title'}
                     required={postType === 'regular'}
                   />
@@ -487,12 +487,12 @@ const Admin = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Category <span className="text-red-500">*</span>
+                      Category <span className="text-[#fc561c]">*</span>
                     </label>
                     <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent"
                       required
                     >
                       <option value="">Select Category</option>
@@ -511,7 +511,7 @@ const Admin = () => {
                       type="text"
                       value={author}
                       onChange={(e) => setAuthor(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent"
                       placeholder="Author name (optional)"
                     />
                   </div>
@@ -522,12 +522,12 @@ const Admin = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Platform <span className="text-red-500">*</span>
+                      Platform <span className="text-[#fc561c]">*</span>
                     </label>
                     <select
                       value={platform}
                       onChange={(e) => setPlatform(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent"
                       required
                     >
                       <option value="instagram">Instagram</option>
@@ -538,13 +538,13 @@ const Admin = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      URL <span className="text-red-500">*</span>
+                      URL <span className="text-[#fc561c]">*</span>
                     </label>
                     <input
                       type="url"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent"
                       placeholder="https://instagram.com/p/abc123"
                       required
                     />
@@ -555,12 +555,12 @@ const Admin = () => {
               {postType === 'regular' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Content <span className="text-red-500">*</span>
+                    Content <span className="text-[#fc561c]">*</span>
                   </label>
                   <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent"
                     rows="6"
                     placeholder="Write your content here..."
                     required
@@ -583,7 +583,7 @@ const Admin = () => {
                     type="text"
                     value={instagramHandle}
                     onChange={(e) => setInstagramHandle(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent"
                     placeholder="@username"
                   />
                 </div>
@@ -594,7 +594,7 @@ const Admin = () => {
                     type="text"
                     value={facebookHandle}
                     onChange={(e) => setFacebookHandle(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent"
                     placeholder="@username"
                   />
                 </div>
@@ -605,7 +605,7 @@ const Admin = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-red-600 text-white p-3 rounded-lg font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="flex-1 bg-[#fc561c] text-white p-3 rounded-lg font-medium hover:bg-[#fc561c] focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {loading ? <Loader className="animate-spin mr-2" size={20} /> : <Save className="mr-2" size={20} />}
                   {loading ? 'Saving...' : (editingPost ? 'Update Post' : 'Create Post')}
@@ -654,7 +654,7 @@ const Admin = () => {
                     )}
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="inline-block bg-red-100 text-red-800 text-xs font-semibold px-3 py-1 rounded-full">
+                        <span className="inline-block bg-[#fc561c] text-white text-xs font-semibold px-3 py-1 rounded-full">
                           {post.category.toUpperCase()}
                         </span>
                         <span className="text-xs text-gray-500">
@@ -676,7 +676,7 @@ const Admin = () => {
                         </button>
                         <button
                           onClick={() => handleDelete(post.id, 'regular')}
-                          className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center"
+                          className="flex-1 bg-[#fc561c] text-white px-4 py-2 rounded-lg hover:bg-[#fc561c] transition-colors flex items-center justify-center"
                         >
                           <Trash2 size={16} className="mr-1" />
                           Delete
@@ -745,7 +745,7 @@ const Admin = () => {
                         </button>
                         <button
                           onClick={() => handleDelete(link.id, 'social')}
-                          className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center"
+                          className="flex-1 bg-[#fc561c] text-white px-4 py-2 rounded-lg hover:bg-[#fc561c] transition-colors flex items-center justify-center"
                         >
                           <Trash2 size={16} className="mr-1" />
                           Delete

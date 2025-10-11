@@ -60,10 +60,10 @@ const Footer = () => {
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="flex-1 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-600"
+                  className="flex-1 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                   required
                 />
-                <button className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-full font-medium transition-all duration-300">
+                <button className="bg-[#fc561c] hover:bg-[#fc561c] px-6 py-2 rounded-full font-medium transition-all duration-300">
                   Subscribe
                 </button>
               </form>
@@ -78,7 +78,7 @@ const Footer = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="text-slate-300 hover:text-red-300 hover:pl-2 transition-all duration-200 text-sm"
+                  className="text-slate-300 hover:text-[#fc561c] hover:pl-2 transition-all duration-200 text-sm"
                 >
                   {link.name}
                 </Link>
@@ -92,7 +92,7 @@ const Footer = () => {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white/10 backdrop-blur-sm border border-slate-600 p-2 rounded-full text-slate-300 hover:text-red-300 hover:border-red-500 transition-all duration-300"
+                  className="bg-white/10 backdrop-blur-sm border border-slate-600 p-2 rounded-full text-slate-300 hover:text-[#fc561c] hover:border-[#fc561c] transition-all duration-300"
                   aria-label={`Follow us on ${social.name}`}
                 >
                   {social.icon}
@@ -110,10 +110,10 @@ const Footer = () => {
             © {currentYear} WiseTV. All rights reserved.
           </div>
           <div className="flex gap-6 text-sm">
-            <Link to="/privacy" className="text-slate-400 hover:text-red-300 transition-all duration-200">
+            <Link to="/privacy" className="text-slate-400 hover:text-[#fc561c] transition-all duration-200">
               Privacy Policy
             </Link>
-            <Link to="/terms" className="text-slate-400 hover:text-red-300 transition-all duration-200">
+            <Link to="/terms" className="text-slate-400 hover:text-[#fc561c] transition-all duration-200">
               Terms of Service
             </Link>
           </div>
@@ -123,7 +123,7 @@ const Footer = () => {
       {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-6 right-6 bg-red-600/80 backdrop-blur-sm hover:bg-red-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50 group"
+        className="fixed bottom-6 right-6 bg-[#fc561c]/80 backdrop-blur-sm hover:bg-[#fc561c] text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50 group"
         aria-label="Back to top"
       >
         <ArrowUp className="w-5 h-5 transform group-hover:-translate-y-1 transition-transform duration-200" />

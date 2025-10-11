@@ -186,7 +186,7 @@ const Home = () => {
       {/* Error Display */}
       {error && (
         <div className="container mx-auto px-4 py-4">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="bg-[#fc561c]50 border border-[#fc561c] text-[#fc561c] px-4 py-3 rounded-lg">
             {error}
           </div>
         </div>
@@ -197,7 +197,7 @@ const Home = () => {
 
       {/* About WISE TV Section */}
       <section className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-3xl font-bold mb-6 border-b-2 border-red-600 inline-block">
+        <h2 className="text-3xl font-bold mb-6 border-b-2 border-[#fc561c] inline-block">
           About W-GHTV
         </h2>
         <p className="text-slate-600 max-w-3xl mx-auto leading-relaxed">
@@ -211,7 +211,7 @@ const Home = () => {
 
       {/* Featured Content Section with YouTube Embed */}
       <section className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-3xl font-bold mb-6 border-b-2 border-red-600 inline-block">
+        <h2 className="text-3xl font-bold mb-6 border-b-2 border-[#fc561c] inline-block">
           Featured Content
         </h2>
         <div className="max-w-4xl mx-auto">
@@ -234,7 +234,7 @@ const Home = () => {
       <section className="container mx-auto px-4 py-16">
         <div className="flex items-center justify-between mb-12">
           <h2 className="text-3xl font-bold text-slate-900 mb-2">Latest Updates</h2>
-          <Link to="/all" className="text-red-600 hover:underline font-semibold">
+          <Link to="/all" className="text-[#fc561c] hover:underline font-semibold">
             View All
           </Link>
         </div>
@@ -271,7 +271,7 @@ const Home = () => {
             <h3 className="text-2xl font-bold capitalize text-slate-900">
               {category}
             </h3>
-            <Link to={`/${category}`} className="text-red-600 hover:underline font-semibold">
+            <Link to={`/${category}`} className="text-[#fc561c] hover:underline font-semibold">
               View All
             </Link>
           </div>

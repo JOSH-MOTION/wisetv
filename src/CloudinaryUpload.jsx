@@ -88,7 +88,7 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError }) => {
           <button
             type="button"
             onClick={clearPreview}
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+            className="bg-[#fc561c] text-white px-4 py-2 rounded hover:bg-[#fc561c] transition duration-300"
           >
             Remove
           </button>

@@ -224,7 +224,7 @@ const ImprovedAdmin = () => {
             </div>
             <button
               onClick={handleLogout}
-              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 shadow-sm"
+              className="bg-[#fc561c] text-white px-6 py-2 rounded-lg hover:bg-[#fc561c] transition duration-200 shadow-sm"
             >
               Log Out
             </button>
@@ -233,7 +233,7 @@ const ImprovedAdmin = () => {
 
         {/* Notifications */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-[#fc561c]50 border border-[#fc561c] text-[#fc561c] px-4 py-3 rounded-lg mb-6">
             <div className="flex">
               <svg className="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -267,7 +267,7 @@ const ImprovedAdmin = () => {
               <select
                 value={postType}
                 onChange={(e) => setPostType(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                 disabled={editingPost}
               >
                 <option value="regular">Regular Post</option>
@@ -278,13 +278,13 @@ const ImprovedAdmin = () => {
             {/* Title */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Title {postType === 'regular' && <span className="text-red-500">*</span>}
+                Title {postType === 'regular' && <span className="text-[#fc561c]">*</span>}
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                 placeholder={postType === 'social' ? 'Optional (defaults to timestamp)' : 'Enter post title'}
               />
             </div>
@@ -293,12 +293,12 @@ const ImprovedAdmin = () => {
             {postType === 'regular' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category <span className="text-red-500">*</span>
+                  Category <span className="text-white">*</span>
                 </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                 >
                   <option value="">Select Category</option>
                   <option value="documentaries">Documentaries</option>
@@ -315,12 +315,12 @@ const ImprovedAdmin = () => {
             {postType === 'regular' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Content <span className="text-red-500">*</span>
+                  Content <span className="text-white">*</span>
                 </label>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                   rows="4"
                   placeholder="Enter post content"
                 />
@@ -332,12 +332,12 @@ const ImprovedAdmin = () => {
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Platform <span className="text-red-500">*</span>
+                    Platform <span className="text-white">*</span>
                   </label>
                   <select
                     value={platform}
                     onChange={(e) => setPlatform(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                   >
                     <option value="instagram">Instagram</option>
                     <option value="facebook">Facebook</option>
@@ -346,13 +346,13 @@ const ImprovedAdmin = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    URL <span className="text-red-500">*</span>
+                    URL <span className="text-[#fc561c]">*</span>
                   </label>
                   <input
                     type="url"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                     placeholder="https://instagram.com/p/abc..."
                   />
                 </div>
@@ -366,7 +366,7 @@ const ImprovedAdmin = () => {
                 type="text"
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                 placeholder="Author name (optional)"
               />
             </div>
@@ -399,7 +399,7 @@ const ImprovedAdmin = () => {
                   type="text"
                   value={instagramHandle}
                   onChange={(e) => setInstagramHandle(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                   placeholder="@wisetv"
                 />
               </div>
@@ -409,7 +409,7 @@ const ImprovedAdmin = () => {
                   type="text"
                   value={facebookHandle}
                   onChange={(e) => setFacebookHandle(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                   placeholder="@wisetvpage"
                 />
               </div>
@@ -420,7 +420,7 @@ const ImprovedAdmin = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-[#fc561c] text-white py-3 px-6 rounded-lg hover:bg-[#fc561c] transition duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
@@ -454,7 +454,7 @@ const ImprovedAdmin = () => {
           
           {loading && (
             <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#fc561c]"></div>
             </div>
           )}
 
@@ -482,7 +482,7 @@ const ImprovedAdmin = () => {
                   )}
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#fc561c] text-[#fc561c]">
                         {post.category}
                       </span>
                       <span className="text-xs text-gray-500">
@@ -502,7 +502,7 @@ const ImprovedAdmin = () => {
                       </button>
                       <button
                         onClick={() => handleDelete(post.id, 'regular')}
-                        className="flex-1 bg-red-600 text-white text-sm py-2 px-3 rounded hover:bg-red-700 transition duration-200"
+                        className="flex-1 bg-[#fc561c] text-white text-sm py-2 px-3 rounded hover:bg-[#fc561c] transition duration-200"
                       >
                         Delete
                       </button>
@@ -552,7 +552,7 @@ const ImprovedAdmin = () => {
                       </button>
                       <button
                         onClick={() => handleDelete(link.id, 'social')}
-                        className="flex-1 bg-red-600 text-white text-sm py-2 px-3 rounded hover:bg-red-700 transition duration-200"
+                        className="flex-1 bg-[#fc561c] text-white text-sm py-2 px-3 rounded hover:bg-[#fc561c] transition duration-200"
                       >
                         Delete
                       </button>
