@@ -16,6 +16,7 @@ import Admin from './components/Admin';
 import AdminLogin from './components/AdminLogin';
 import AdminSignup from './components/AdminSignup';
 
+// Admin routes component
 function AdminRoutes() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -50,11 +51,7 @@ function AdminRoutes() {
         path="/"
         element={
           isAuthenticated ? (
-            <>
-              <Header />
-              <main className="flex-grow"><Admin /></main>
-              <Footer />
-            </>
+            <Admin />
           ) : (
             <Navigate to="/admin/login" />
           )
@@ -65,6 +62,7 @@ function AdminRoutes() {
   );
 }
 
+// Public routes component
 function PublicRoutes() {
   console.log('PublicRoutes: Rendering at', new Date().toISOString());
   return (
@@ -79,7 +77,7 @@ function PublicRoutes() {
           <Route path="/interviews" element={<Interviews />} />
           <Route path="/movies" element={<Movies />} />
           <Route path="/photojournalism" element={<Photojournalism />} />
-          <Route path="*" element={<div className="text-gray-900 text-center py-12">404: Page Not Found</div>} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
       <Footer />
@@ -87,16 +85,23 @@ function PublicRoutes() {
   );
 }
 
+// Main App component
+function App() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-100">
+      <Routes>
+        <Route path="/admin/*" element={<AdminRoutes />} />
+        <Route path="/*" element={<PublicRoutes />} />
+      </Routes>
+    </div>
+  );
+}
+
+// Render the app
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-100">
-        <Routes>
-          <Route path="/admin/*" element={<AdminRoutes />} />
-          <Route path="/*" element={<PublicRoutes />} />
-          <Route path="*" element={<div className="text-gray-900 text-center py-12">404: Invalid Route</div>} />
-        </Routes>
-      </div>
+      <App />
     </BrowserRouter>
   </React.StrictMode>
 );
