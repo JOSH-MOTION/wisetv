@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../../lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaSearch } from 'react-icons/fa';
+import { FaTiktok, FaXTwitter } from 'react-icons/fa6';
+import { Mail, Phone, MapPin, ArrowUp, Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
 import { Play, Clock, Eye } from 'lucide-react';
 import Card from './Card'; // Import the reusable Card component
 
@@ -22,11 +24,12 @@ const News = () => {
   const [email, setEmail] = useState('');
 
   const socialLinks = [
-    { name: 'Facebook', url: 'https://facebook.com/YourPage', icon: <FaFacebookF className="text-blue-600" /> },
-    { name: 'X', url: 'https://x.com/wisetv010', icon: <FaTwitter className="text-sky-500" /> },
-    { name: 'Instagram', url: 'https://www.instagram.com/wisetv.2?igsh=MXZzczd4amoxbmE1cQ==', icon: <FaInstagram className="text-pink-500" /> },
-    { name: 'YouTube', url: 'https://www.youtube.com/@WiseTv.2', icon: <FaYoutube className="text-[#fc561c]" /> },
-  ];
+    { name: 'Instagram', icon: <Instagram className="w-5 h-5" />, url: 'https://www.instagram.com/w_gh.tv?igsh=MXZzczd4amoxbmE1cQ==' },
+  { name: 'Facebook', icon: <Facebook className="w-5 h-5" />, url: 'https://facebook.com/wisetv' },
+  { name: 'YouTube', icon: <Youtube className="w-5 h-5" />, url: 'https://www.youtube.com/@Wgh_Tv' },
+  { name: 'X (Twitter)', icon: <FaXTwitter className="w-5 h-5" />, url: 'https://x.com/w_gh_tv' },
+  { name: 'TikTok', icon: <FaTiktok className="w-5 h-5" />, url: 'https://www.tiktok.com/@wgh.tv?is_from_webapp=1&sender_device=pc' },
+];
 
   const mockPosts = [
     {

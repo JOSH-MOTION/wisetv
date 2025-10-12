@@ -1,89 +1,175 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Play, Calendar, User, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const Card = ({ item, onToggleExpand, isExpanded }) => {
-  return (
-    <article
-      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-slate-200/50"
-    >
-      {/* Image Container */}
-      <div className="relative aspect-video overflow-hidden">
-        <img
-          src={item.image || 'https://via.placeholder.com/300x200/CCCCCC/FFFFFF?text=Image+Not+Found'}
-          alt={item.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-          loading="lazy"
-          onError={(e) => {
-            e.target.src = 'https://via.placeholder.com/300x200/CCCCCC/FFFFFF?text=Image+Not+Found';
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-            <Link
-              to={`/${item.category}`}
-              className="flex items-center bg-[#fc561c] text-white px-4 py-2 rounded-full font-medium hover:bg-[#fc561c] transition-colors"
-            >
-              <Play className="w-4 h-4 mr-2" />
-              View Now
-            </Link>
-            <button
-              onClick={() => onToggleExpand(item.id)}
-              className="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-4 py-2 rounded-full font-medium hover:bg-white/30 transition-colors"
-            >
-              {isExpanded ? 'Less Info' : 'More Info'}
-            </button>
-          </div>
-        </div>
-        {item.duration && (
-          <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs font-medium">
-            {item.duration}
-          </div>
-        )}
-      </div>
+const Card = ({ item }) => {
+  // Framer Motion variants for animations
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: 'easeOut' },
+    },
+    hover: {
+      scale: 1.03,
+      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
+      transition: { duration: 0.3 },
+    },
+  };
 
-      {/* Content */}
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-3">
-          <span className="inline-flex items-center bg-[#fc561c] text-white px-3 py-1 rounded-full text-xs font-semibold">
-            {item.category.toUpperCase()}
-          </span>
-          {item.views && (
-            <div className="flex items-center text-slate-500 text-xs">
-              <Eye className="w-3 h-3 mr-1" />
-              {item.views.toLocaleString()}
+  const imageVariants = {
+    initial: { scale: 1 },
+    hover: { scale: 1.05, transition: { duration: 0.7 } },
+  };
+
+  const overlayVariants = {
+    initial: { opacity: 0 },
+    hover: { opacity: 1, transition: { duration: 0.3 } },
+  };
+
+  // Create platform-specific placeholder
+  const createPlaceholderImage = (platform) => {
+    const colors = {
+      instagram: { bg: '#E4405F', text: '#FFFFFF' },
+      facebook: { bg: '#1877F2', text: '#FFFFFF' },
+      youtube: { bg: '#FF0000', text: '#FFFFFF' },
+      twitter: { bg: '#1DA1F2', text: '#FFFFFF' },
+      tiktok: { bg: '#000000', text: '#FFFFFF' },
+      regular: { bg: '#CCCCCC', text: '#FFFFFF' },
+    };
+
+    const color = colors[platform?.toLowerCase()] || colors.regular;
+    const platformName = platform ? platform.charAt(0).toUpperCase() + platform.slice(1) : 'Post';
+
+    const svg = `
+      <svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="400" fill="${color.bg}"/>
+        <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="${color.text}" text-anchor="middle" dominant-baseline="middle">
+          ${platformName} Post
+        </text>
+      </svg>
+    `;
+
+    return `data:image/svg+xml;base64,${btoa(svg)}`;
+  };
+
+  // Determine URLs
+  const categoryUrl = `/${item.category}`;
+  const detailUrl = item.type === 'social' ? item.url : `/posts/${item.id}`;
+  const placeholderImage = item.type === 'social' ? createPlaceholderImage(item.platform) : createPlaceholderImage('regular');
+
+  return (
+    <Link
+      to={categoryUrl}
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      className="block"
+    >
+      <motion.article
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        whileHover="hover"
+        className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200/50 transition-all duration-300"
+      >
+        <div className="relative aspect-video overflow-hidden">
+          <motion.img
+            src={item.image || placeholderImage}
+            alt={item.title}
+            variants={imageVariants}
+            className="w-full h-32 object-cover"
+            loading="lazy"
+            onError={(e) => {
+              e.target.src = placeholderImage;
+            }}
+          />
+          <motion.div
+            variants={overlayVariants}
+            className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+          >
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+              {item.type === 'social' ? (
+                <a
+                  href={detailUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center bg-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-orange-600 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Play className="w-3 h-3 mr-1" />
+                  View Now
+                </a>
+              ) : (
+                <Link
+                  to={detailUrl}
+                  className="flex items-center bg-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-orange-600 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Play className="w-3 h-3 mr-1" />
+                  View Now
+                </Link>
+              )}
+              {item.type === 'social' ? (
+                <a
+                  href={detailUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-white/30 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  More Info
+                </a>
+              ) : (
+                <Link
+                  to={detailUrl}
+                  className="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-white/30 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  More Info
+                </Link>
+              )}
+            </div>
+          </motion.div>
+          {item.duration && (
+            <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded-md text-xs font-medium">
+              {item.duration}
             </div>
           )}
         </div>
 
-        <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#fc561c] transition-colors">
-          {item.title}
-        </h3>
-
-        <p className="text-slate-600 text-sm mb-4 line-clamp-2">
-          {item.content}
-        </p>
-
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <div className="flex items-center">
-            <Calendar className="w-3 h-3 mr-1" />
-            {new Date(item.date).toLocaleDateString()}
+        <div className="p-4">
+          <div className="flex items-start justify-between mb-2">
+            <span className="inline-flex items-center bg-orange-500/10 text-orange-500 px-2.5 py-1 rounded-full text-xs font-semibold">
+              {item.type === 'social' ? `${item.platform.toUpperCase()} - ${item.category.toUpperCase()}` : item.category.toUpperCase()}
+            </span>
+            {item.views && (
+              <div className="flex items-center text-gray-500 text-xs">
+                <Eye className="w-3 h-3 mr-1" />
+                {item.views.toLocaleString()}
+              </div>
+            )}
           </div>
-          <div className="flex items-center">
-            <User className="w-3 h-3 mr-1" />
-            {item.author || 'Anonymous'}
+
+          <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2 hover:text-orange-500 transition-colors">
+            {item.title}
+          </h3>
+
+          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{item.content || (item.type === 'social' ? item.url : '')}</p>
+
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <div className="flex items-center">
+              <Calendar className="w-3 h-3 mr-1" />
+              {new Date(item.date).toLocaleDateString()}
+            </div>
+            <div className="flex items-center">
+              <User className="w-3 h-3 mr-1" />
+              {item.author || 'Anonymous'}
+            </div>
           </div>
         </div>
-
-        {isExpanded && (
-          <div className="mt-4 pt-4 border-t border-slate-200">
-            <p className="text-slate-700 text-sm leading-relaxed">
-              {item.content}
-            </p>
-          </div>
-        )}
-      </div>
-    </article>
+      </motion.article>
+    </Link>
   );
 };
 

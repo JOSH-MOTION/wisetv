@@ -1,27 +1,36 @@
 import React, { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LogIn } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
-const AdminLogin = () => {
+const AdminSignup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const auth = getAuth();
   const navigate = useNavigate();
+
+  const COMPANY_PIN = import.meta.env.VITE_COMPANY_PIN || 'WISE2024';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
+    if (pin !== COMPANY_PIN) {
+      setError('Invalid company PIN. Please contact support.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await createUserWithEmailAndPassword(auth, email, password);
       navigate('/admin');
     } catch (error) {
-      setError('Invalid credentials. Please check your email and password.');
+      setError('Signup failed: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -52,7 +61,7 @@ const AdminLogin = () => {
             animate={{ rotate: 360 }}
             transition={{ duration: 1.5, ease: 'easeInOut' }}
           >
-            <LogIn className="h-6 w-6 text-white" />
+            <Lock className="h-6 w-6 text-white" />
           </motion.div>
           <motion.h2
             className="mt-6 text-3xl font-bold text-gray-900"
@@ -60,7 +69,7 @@ const AdminLogin = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            Admin Login
+            Admin Signup
           </motion.h2>
           <motion.p
             className="mt-2 text-sm text-gray-600"
@@ -68,7 +77,7 @@ const AdminLogin = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            Access the admin dashboard
+            Create an admin account with the company PIN
           </motion.p>
         </div>
 
@@ -115,6 +124,21 @@ const AdminLogin = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </motion.div>
+            <motion.div variants={inputVariants} whileFocus="focus">
+              <label htmlFor="pin" className="block text-sm font-medium text-gray-700 mb-2">
+                Company PIN
+              </label>
+              <input
+                id="pin"
+                name="pin"
+                type="text"
+                required
+                className="w-full p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
+                placeholder="Company PIN"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+              />
+            </motion.div>
           </div>
           <motion.button
             type="submit"
@@ -141,12 +165,12 @@ const AdminLogin = () => {
               <svg className="-ml-1 mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
-                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                  d="M10 3a1 1 0 00-1 1v4H5a1 1 0 100 2h4v4a1 1 0 102 0v-4h4a1 1 0 100-2h-4V4a1 1 0 00-1-1z"
                   clipRule="evenodd"
                 />
               </svg>
             )}
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Creating account...' : 'Sign Up'}
           </motion.button>
         </form>
       </motion.div>
@@ -154,4 +178,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default AdminSignup;

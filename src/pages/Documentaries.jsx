@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Play, Clock, Calendar, User, Eye } from 'lucide-react';
+import SocialMediaCard from '../components/SocialMediaCard';
 
 const Documentaries = () => {
   const [posts, setPosts] = useState([]);
+  const [socialLinks, setSocialLinks] = useState([]);
   const [expandedPost, setExpandedPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,16 +14,25 @@ const Documentaries = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const postsSnapshot = await getDocs(collection(db, 'posts'));
-      const postsData = postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const documentaryPosts = postsData
-        .filter(post => post.category === 'documentaries')
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
-      setPosts(documentaryPosts);
+      
+      // Fetch regular posts
+      const postsQuery = query(collection(db, 'posts'), where('category', '==', 'documentaries'));
+      const postsSnapshot = await getDocs(postsQuery);
+      const postsData = postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), type: 'regular' }));
+      
+      // Fetch social media posts
+      const socialQuery = query(collection(db, 'socialLinks'), where('category', '==', 'documentaries'));
+      const socialSnapshot = await getDocs(socialQuery);
+      const socialData = socialSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), type: 'social' }));
+      
+      // Set posts and social links separately
+      setPosts(postsData.sort((a, b) => new Date(b.date) - new Date(a.date)));
+      setSocialLinks(socialData.sort((a, b) => new Date(b.date) - new Date(a.date)));
     } catch (error) {
       console.error('Error fetching posts:', error);
       setError('Failed to fetch documentaries: ' + error.message);
       setPosts([]);
+      setSocialLinks([]);
     } finally {
       setLoading(false);
     }
@@ -45,7 +56,8 @@ const Documentaries = () => {
       author: 'Environmental Films',
       image: 'https://images.unsplash.com/photo-1569163139394-de44aa4a71d6?w=800&h=600&fit=crop',
       duration: '95 min',
-      views: 15432
+      views: 15432,
+      type: 'regular'
     },
     {
       id: 'ocean-guardians',
@@ -55,31 +67,16 @@ const Documentaries = () => {
       author: 'Blue Planet Productions',
       image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop',
       duration: '110 min',
-      views: 23891
+      views: 23891,
+      type: 'regular'
     },
-    {
-      id: 'urban-revolution',
-      title: 'Urban Revolution: Cities of Tomorrow',
-      content: 'Exploring innovative urban planning and sustainable city development around the world. This documentary reveals how cities are transforming to become more livable, sustainable, and resilient.',
-      date: '2024-12-05T09:15:00Z',
-      author: 'Future Cities Media',
-      image: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=600&fit=crop',
-      duration: '88 min',
-      views: 18765
-    },
-    {
-      id: 'digital-divide',
-      title: 'The Digital Divide',
-      content: 'An investigation into global digital inequality and its impact on education, healthcare, and economic opportunities. This film examines both the challenges and solutions to bridging the digital gap.',
-      date: '2024-11-28T16:45:00Z',
-      author: 'Tech Impact Films',
-      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop',
-      duration: '102 min',
-      views: 12543
-    }
   ];
 
   const displayPosts = posts.length > 0 ? posts : mockPosts;
+  const displaySocialLinks = socialLinks;
+  
+  // Combine all content and sort by date
+  const allContent = [...displayPosts, ...displaySocialLinks].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   if (loading) {
     return (
@@ -120,7 +117,7 @@ const Documentaries = () => {
               Dive deep into compelling narratives that explore the most pressing issues of our time, told through the lens of award-winning documentarians.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="group inline-flex items-center bg-[#fc561c] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#fc561c] transition-all duration-300 shadow-lg hover:shadow-xl">
+              <button className="group inline-flex items-center bg-[#fc561c] text-white px-8 py-4 rounded-full font-semibold hover:bg-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl">
                 <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                 Watch Featured
               </button>
@@ -137,7 +134,7 @@ const Documentaries = () => {
       {/* Error Display */}
       {error && (
         <div className="container mx-auto px-4 py-4">
-          <div className="bg-[#fc561c]50 border border-[#fc561c] text-[#fc561c] px-4 py-3 rounded-lg">
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
             {error}
           </div>
         </div>
@@ -152,98 +149,102 @@ const Documentaries = () => {
           </div>
           <div className="hidden md:flex items-center gap-2 text-sm text-slate-500">
             <Clock className="w-4 h-4" />
-            <span>{displayPosts.length} documentaries available</span>
+            <span>{allContent.length} items available</span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayPosts.map(post => (
-            <article
-              key={post.id}
-              className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-slate-200/50"
-            >
-              {/* Image Container */}
-              <div className="relative aspect-video overflow-hidden">
-                <img
-                  src={post.image || 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=800&h=600&fit=crop'}
-                  alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=800&h=600&fit=crop';
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                    <button className="flex items-center bg-[#fc561c] text-white px-4 py-2 rounded-full font-medium hover:bg-[#fc561c] transition-colors">
-                      <Play className="w-4 h-4 mr-2" />
-                      Watch Now
-                    </button>
-                    <button
-                      onClick={() => toggleExpand(post.id)}
-                      className="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-4 py-2 rounded-full font-medium hover:bg-white/30 transition-colors"
-                    >
-                      {expandedPost === post.id ? 'Less Info' : 'More Info'}
-                    </button>
+          {allContent.map(item => (
+            item.type === 'social' ? (
+              <SocialMediaCard key={item.id} item={item} />
+            ) : (
+              <article
+                key={item.id}
+                className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-slate-200/50"
+              >
+                {/* Image Container */}
+                <div className="relative aspect-video overflow-hidden">
+                  <img
+                    src={item.image || 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=800&h=600&fit=crop'}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=800&h=600&fit=crop';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                      <button className="flex items-center bg-[#fc561c] text-white px-4 py-2 rounded-full font-medium hover:bg-orange-600 transition-colors">
+                        <Play className="w-4 h-4 mr-2" />
+                        Watch Now
+                      </button>
+                      <button
+                        onClick={() => toggleExpand(item.id)}
+                        className="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-4 py-2 rounded-full font-medium hover:bg-white/30 transition-colors"
+                      >
+                        {expandedPost === item.id ? 'Less Info' : 'More Info'}
+                      </button>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Duration Badge */}
-                {post.duration && (
-                  <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs font-medium">
-                    {post.duration}
-                  </div>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <span className="inline-flex items-center bg-[#fc561c] text-[#fc561c] px-3 py-1 rounded-full text-xs font-semibold">
-                    DOCUMENTARY
-                  </span>
-                  {post.views && (
-                    <div className="flex items-center text-slate-500 text-xs">
-                      <Eye className="w-3 h-3 mr-1" />
-                      {post.views.toLocaleString()}
+                  
+                  {/* Duration Badge */}
+                  {item.duration && (
+                    <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs font-medium">
+                      {item.duration}
                     </div>
                   )}
                 </div>
-                
-                <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#fc561c] transition-colors">
-                  {post.title}
-                </h3>
-                
-                <p className="text-slate-600 text-sm mb-4 line-clamp-2">
-                  {post.content}
-                </p>
 
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <div className="flex items-center">
-                    <Calendar className="w-3 h-3 mr-1" />
-                    {new Date(post.date).toLocaleDateString()}
+                {/* Content */}
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <span className="inline-flex items-center bg-[#fc561c] text-white px-3 py-1 rounded-full text-xs font-semibold">
+                      DOCUMENTARY
+                    </span>
+                    {item.views && (
+                      <div className="flex items-center text-slate-500 text-xs">
+                        <Eye className="w-3 h-3 mr-1" />
+                        {item.views.toLocaleString()}
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center">
-                    <User className="w-3 h-3 mr-1" />
-                    {post.author || 'Anonymous'}
+                  
+                  <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#fc561c] transition-colors">
+                    {item.title}
+                  </h3>
+                  
+                  <p className="text-slate-600 text-sm mb-4 line-clamp-2">
+                    {item.content}
+                  </p>
+
+                  <div className="flex items-center justify-between text-xs text-slate-500">
+                    <div className="flex items-center">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      {new Date(item.date).toLocaleDateString()}
+                    </div>
+                    <div className="flex items-center">
+                      <User className="w-3 h-3 mr-1" />
+                      {item.author || 'Anonymous'}
+                    </div>
                   </div>
+
+                  {/* Expanded Content */}
+                  {expandedPost === item.id && (
+                    <div className="mt-4 pt-4 border-t border-slate-200">
+                      <p className="text-slate-700 text-sm leading-relaxed">
+                        {item.content}
+                      </p>
+                    </div>
+                  )}
                 </div>
-
-                {/* Expanded Content */}
-                {expandedPost === post.id && (
-                  <div className="mt-4 pt-4 border-t border-slate-200">
-                    <p className="text-slate-700 text-sm leading-relaxed">
-                      {post.content}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </article>
+              </article>
+            )
           ))}
         </div>
 
         {/* Empty State */}
-        {displayPosts.length === 0 && !loading && (
+        {allContent.length === 0 && !loading && (
           <div className="text-center py-16">
             <div className="w-24 h-24 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6">
               <Play className="w-12 h-12 text-slate-400" />
@@ -261,7 +262,7 @@ const Documentaries = () => {
           <p className="text-slate-300 mb-8 max-w-2xl mx-auto">
             Share your story with our global audience. We're always looking for compelling documentaries that spark conversation and drive change.
           </p>
-          <button className="bg-[#fc561c] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#fc561c] transition-colors">
+          <button className="bg-[#fc561c] text-white px-8 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors">
             Submit Your Film
           </button>
         </div>
