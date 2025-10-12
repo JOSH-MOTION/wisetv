@@ -17,7 +17,16 @@ export default defineConfig({
       },
     },
   },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'firebase', 'framer-motion'],
-  },
+ optimizeDeps: {
+  include: [
+    'react',
+    'react-dom',
+    'react-router-dom',
+    'firebase/app',
+    'firebase/auth',
+    'firebase/firestore',
+    'framer-motion'
+  ],
+},
+
 });
