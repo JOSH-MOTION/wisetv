@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -15,43 +15,45 @@ import Photojournalism from './pages/Photojournalism';
 import Admin from './components/Admin';
 import AdminLogin from './components/AdminLogin';
 import AdminSignup from './components/AdminSignup';
-import { useState, useEffect } from 'react';
 
-// Component to handle admin routes
 function AdminRoutes() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const auth = getAuth();
 
   useEffect(() => {
+    console.log('AdminRoutes: Checking auth at', new Date().toISOString());
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('AdminRoutes: Auth state:', user ? `Logged in as ${user.uid}` : 'Not logged in');
       setIsAuthenticated(!!user);
+      setLoading(false);
+    }, (error) => {
+      console.error('AdminRoutes: Auth error:', error.message, error.code);
       setLoading(false);
     });
     return () => unsubscribe();
   }, [auth]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-orange-100">
+        <div className="text-gray-900 text-lg font-semibold">Loading authentication...</div>
+      </div>
+    );
   }
 
   return (
     <Routes>
-      {/* Routes without Header/Footer */}
       <Route path="/login" element={<AdminLogin />} />
       <Route path="/signup" element={<AdminSignup />} />
-      {/* Admin dashboard with Header */}
       <Route
         path="/"
         element={
           isAuthenticated ? (
             <>
               <Header />
-              <main className="flex-grow">
-                <Admin />
-              </main>
-              {/* Optional: Include Footer if desired */}
-              {/* <Footer /> */}
+              <main className="flex-grow"><Admin /></main>
+              <Footer />
             </>
           ) : (
             <Navigate to="/admin/login" />
@@ -63,8 +65,8 @@ function AdminRoutes() {
   );
 }
 
-// Component to handle public routes
 function PublicRoutes() {
+  console.log('PublicRoutes: Rendering at', new Date().toISOString());
   return (
     <>
       <Header />
@@ -77,7 +79,7 @@ function PublicRoutes() {
           <Route path="/interviews" element={<Interviews />} />
           <Route path="/movies" element={<Movies />} />
           <Route path="/photojournalism" element={<Photojournalism />} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<div className="text-gray-900 text-center py-12">404: Page Not Found</div>} />
         </Routes>
       </main>
       <Footer />
@@ -88,10 +90,13 @@ function PublicRoutes() {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path="/admin/*" element={<AdminRoutes />} />
-        <Route path="/*" element={<PublicRoutes />} />
-      </Routes>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-100">
+        <Routes>
+          <Route path="/admin/*" element={<AdminRoutes />} />
+          <Route path="/*" element={<PublicRoutes />} />
+          <Route path="*" element={<div className="text-gray-900 text-center py-12">404: Invalid Route</div>} />
+        </Routes>
+      </div>
     </BrowserRouter>
   </React.StrictMode>
 );
