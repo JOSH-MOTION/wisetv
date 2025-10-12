@@ -2,8 +2,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-
-import { imageOptimizer } from 'vite-plugin-image-optimizer';
+import imageOptimizer from 'vite-plugin-image-optimizer';
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), imageOptimizer()],
