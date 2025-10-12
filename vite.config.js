@@ -11,21 +11,19 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('firebase')) {
-              return 'firebase-vendor';
-            }
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            return 'vendor';
-          }
+        manualChunks: {
+          // Group React and ReactDOM together
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // Group Firebase together
+          'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+          // Group other dependencies
+          'ui-vendor': ['lucide-react', 'react-icons', 'framer-motion'],
+          'carousel-vendor': ['react-responsive-carousel'],
         },
       },
     },
   },
-  server: {
-    port: 5173
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom']
   }
 });
