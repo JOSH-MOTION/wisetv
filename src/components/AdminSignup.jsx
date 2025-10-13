@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { auth } from '../../lib/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock } from 'lucide-react';
+import { Lock, ArrowLeft } from 'lucide-react';
 
 const AdminSignup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const auth = getAuth();
   const navigate = useNavigate();
 
   const COMPANY_PIN = import.meta.env.VITE_COMPANY_PIN || 'WISE2024';
@@ -20,17 +21,54 @@ const AdminSignup = () => {
     setLoading(true);
     setError('');
 
+    // Validate PIN
     if (pin !== COMPANY_PIN) {
       setError('Invalid company PIN. Please contact support.');
       setLoading(false);
       return;
     }
 
+    // Validate password match
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      setLoading(false);
+      return;
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      // Create user with Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('Admin account created successfully:', userCredential.user.uid);
+      
+      // Navigate to admin dashboard
       navigate('/admin');
     } catch (error) {
-      setError('Signup failed: ' + error.message);
+      console.error('Signup error:', error);
+      
+      // Handle specific Firebase errors
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          setError('This email is already registered. Please login instead.');
+          break;
+        case 'auth/invalid-email':
+          setError('Invalid email address.');
+          break;
+        case 'auth/operation-not-allowed':
+          setError('Email/password accounts are not enabled. Please contact support.');
+          break;
+        case 'auth/weak-password':
+          setError('Password is too weak. Please use a stronger password.');
+          break;
+        default:
+          setError('Signup failed: ' + error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -96,7 +134,7 @@ const AdminSignup = () => {
           <div className="space-y-4">
             <motion.div variants={inputVariants} whileFocus="focus">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email address
+                Email address *
               </label>
               <input
                 id="email"
@@ -104,29 +142,49 @@ const AdminSignup = () => {
                 type="email"
                 required
                 className="w-full p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
-                placeholder="Email address"
+                placeholder="admin@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </motion.div>
+
             <motion.div variants={inputVariants} whileFocus="focus">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                Password * (min. 6 characters)
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
+                minLength="6"
                 className="w-full p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
-                placeholder="Password"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </motion.div>
+
+            <motion.div variants={inputVariants} whileFocus="focus">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                Confirm Password *
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                minLength="6"
+                className="w-full p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </motion.div>
+
             <motion.div variants={inputVariants} whileFocus="focus">
               <label htmlFor="pin" className="block text-sm font-medium text-gray-700 mb-2">
-                Company PIN
+                Company PIN *
               </label>
               <input
                 id="pin"
@@ -134,12 +192,13 @@ const AdminSignup = () => {
                 type="text"
                 required
                 className="w-full p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
-                placeholder="Company PIN"
+                placeholder="Enter company PIN"
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
               />
             </motion.div>
           </div>
+
           <motion.button
             type="submit"
             disabled={loading}
@@ -173,6 +232,16 @@ const AdminSignup = () => {
             {loading ? 'Creating account...' : 'Sign Up'}
           </motion.button>
         </form>
+
+        <div className="mt-6 text-center">
+          <Link
+            to="/admin/login"
+            className="text-sm text-[#fc561c] hover:text-orange-600 font-medium flex items-center justify-center gap-2"
+          >
+            <ArrowLeft size={16} />
+            Already have an account? Sign in
+          </Link>
+        </div>
       </motion.div>
     </div>
   );

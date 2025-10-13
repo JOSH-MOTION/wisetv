@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { auth } from '../../lib/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LogIn } from 'lucide-react';
+import { LogIn, UserPlus } from 'lucide-react';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const auth = getAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,10 +18,33 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('Admin logged in successfully:', userCredential.user.uid);
+      
+      // Navigate to admin dashboard
       navigate('/admin');
     } catch (error) {
-      setError('Invalid credentials. Please check your email and password.');
+      console.error('Login error:', error);
+      
+      // Handle specific Firebase errors
+      switch (error.code) {
+        case 'auth/invalid-credential':
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+          setError('Invalid email or password. Please try again.');
+          break;
+        case 'auth/invalid-email':
+          setError('Invalid email address.');
+          break;
+        case 'auth/user-disabled':
+          setError('This account has been disabled. Please contact support.');
+          break;
+        case 'auth/too-many-requests':
+          setError('Too many failed attempts. Please try again later.');
+          break;
+        default:
+          setError('Login failed: ' + error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -95,7 +118,7 @@ const AdminLogin = () => {
                 type="email"
                 required
                 className="w-full p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
-                placeholder="Email address"
+                placeholder="admin@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -110,7 +133,7 @@ const AdminLogin = () => {
                 type="password"
                 required
                 className="w-full p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
-                placeholder="Password"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -149,6 +172,16 @@ const AdminLogin = () => {
             {loading ? 'Signing in...' : 'Sign In'}
           </motion.button>
         </form>
+
+        <div className="mt-6 text-center">
+          <Link
+            to="/admin/signup"
+            className="text-sm text-[#fc561c] hover:text-orange-600 font-medium flex items-center justify-center gap-2"
+          >
+            <UserPlus size={16} />
+            Don't have an account? Sign up
+          </Link>
+        </div>
       </motion.div>
     </div>
   );
