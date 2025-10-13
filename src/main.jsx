@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -20,51 +21,49 @@ import AdminSignup from './components/AdminSignup';
 function AdminRoutes() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const auth = getAuth();
 
   useEffect(() => {
-    console.log('AdminRoutes: Checking auth at', new Date().toISOString());
+    console.log('AdminRoutes: Checking auth');
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('AdminRoutes: Auth state:', user ? `Logged in as ${user.uid}` : 'Not logged in');
+      console.log('AdminRoutes: Auth state:', user ? `Logged in as ${user.email}` : 'Not logged in');
       setIsAuthenticated(!!user);
-      setLoading(false);
-    }, (error) => {
-      console.error('AdminRoutes: Auth error:', error.message, error.code);
       setLoading(false);
     });
     return () => unsubscribe();
-  }, [auth]);
+  }, []);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-orange-100">
-        <div className="text-gray-900 text-lg font-semibold">Loading authentication...</div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#fc561c] mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <Routes>
-      <Route path="/login" element={<AdminLogin />} />
-      <Route path="/signup" element={<AdminSignup />} />
-      <Route
-        path="/"
-        element={
-          isAuthenticated ? (
-            <Admin />
-          ) : (
-            <Navigate to="/admin/login" />
-          )
-        }
-      />
-      <Route path="*" element={<Navigate to="/admin/login" />} />
-    </Routes>
+    <>
+      {/* Show header for authenticated admin users */}
+      {isAuthenticated && <Header />}
+      
+      <Routes>
+        <Route path="/login" element={!isAuthenticated ? <AdminLogin /> : <Navigate to="/admin" replace />} />
+        <Route path="/signup" element={!isAuthenticated ? <AdminSignup /> : <Navigate to="/admin" replace />} />
+        <Route
+          path="/"
+          element={isAuthenticated ? <Admin /> : <Navigate to="/admin/login" replace />}
+        />
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/admin" : "/admin/login"} replace />} />
+      </Routes>
+    </>
   );
 }
 
 // Public routes component
 function PublicRoutes() {
-  console.log('PublicRoutes: Rendering at', new Date().toISOString());
+  console.log('PublicRoutes: Rendering');
   return (
     <>
       <Header />
@@ -77,7 +76,7 @@ function PublicRoutes() {
           <Route path="/interviews" element={<Interviews />} />
           <Route path="/movies" element={<Movies />} />
           <Route path="/photojournalism" element={<Photojournalism />} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <Footer />
