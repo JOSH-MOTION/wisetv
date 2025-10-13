@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { auth } from '../../lib/firebase';
+import { auth, db } from '../../lib/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, ArrowLeft } from 'lucide-react';
+import { Lock, ArrowLeft, User, Mail } from 'lucide-react';
 
 const AdminSignup = () => {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [pin, setPin] = useState('');
@@ -21,47 +23,62 @@ const AdminSignup = () => {
     setLoading(true);
     setError('');
 
-    // Validate PIN
+    // Validate inputs
     if (pin !== COMPANY_PIN) {
       setError('Invalid company PIN. Please contact support.');
       setLoading(false);
       return;
     }
-
-    // Validate password match
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       setLoading(false);
       return;
     }
-
-    // Validate password length
     if (password.length < 6) {
       setError('Password must be at least 6 characters long.');
       setLoading(false);
       return;
     }
+    if (!username.trim()) {
+      setError('Username is required.');
+      setLoading(false);
+      return;
+    }
 
     try {
-      // Create user with Firebase Authentication
+      // Create user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('Admin account created successfully:', userCredential.user.uid);
-      
-      // Navigate to admin dashboard
+      const user = userCredential.user;
+
+      // Save user data to Firestore 'users' collection
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        email: user.email,
+        username: username.trim(),
+        role: 'admin',
+        createdAt: new Date().toISOString(),
+      });
+
+      // Save admin data to Firestore 'admins' collection
+      await setDoc(doc(db, 'admins', user.uid), {
+        uid: user.uid,
+        email: user.email,
+        username: username.trim(),
+        role: 'admin',
+        companyPin: COMPANY_PIN,
+        createdAt: new Date().toISOString(),
+      });
+
+      console.log('Admin account created and saved to Firestore:', user.uid);
       navigate('/admin');
     } catch (error) {
       console.error('Signup error:', error);
-      
-      // Handle specific Firebase errors
       switch (error.code) {
         case 'auth/email-already-in-use':
           setError('This email is already registered. Please login instead.');
           break;
         case 'auth/invalid-email':
           setError('Invalid email address.');
-          break;
-        case 'auth/operation-not-allowed':
-          setError('Email/password accounts are not enabled. Please contact support.');
           break;
         case 'auth/weak-password':
           setError('Password is too weak. Please use a stronger password.');
@@ -74,15 +91,9 @@ const AdminSignup = () => {
     }
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
-  };
-
-  const inputVariants = {
-    focus: { scale: 1.02, borderColor: '#fc561c', transition: { duration: 0.3 } },
-    blur: { scale: 1, borderColor: '#d1d5db', transition: { duration: 0.3 } },
   };
 
   return (
@@ -132,23 +143,43 @@ const AdminSignup = () => {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <motion.div variants={inputVariants} whileFocus="focus">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                Username *
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  className="w-full pl-10 p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
+                  placeholder="Your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email address *
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="w-full p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </motion.div>
-
-            <motion.div variants={inputVariants} whileFocus="focus">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  className="w-full pl-10 p-3 bg-white/50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-colors"
+                  placeholder="admin@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password * (min. 6 characters)
               </label>
@@ -163,9 +194,8 @@ const AdminSignup = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-            </motion.div>
-
-            <motion.div variants={inputVariants} whileFocus="focus">
+            </div>
+            <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
                 Confirm Password *
               </label>
@@ -180,9 +210,8 @@ const AdminSignup = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
-            </motion.div>
-
-            <motion.div variants={inputVariants} whileFocus="focus">
+            </div>
+            <div>
               <label htmlFor="pin" className="block text-sm font-medium text-gray-700 mb-2">
                 Company PIN *
               </label>
@@ -196,13 +225,12 @@ const AdminSignup = () => {
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
               />
-            </motion.div>
+            </div>
           </div>
-
           <motion.button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#fc561c] text-white p-3 rounded-lg font-medium hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full bg-[#fc561c] text-white p-3 rounded-lg font-medium hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
