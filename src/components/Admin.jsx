@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../../lib/firebase';
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
-import { Upload, X, Edit, Trash2, Eye, EyeOff, Plus, Save, Loader, Download, Image, LogOut, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
+import { Upload, X, Edit, Trash2, Eye, EyeOff, Plus, Save, Loader, Download, Image, LogOut, CheckCircle, AlertCircle, Sparkles,Share2 } from 'lucide-react';
 
 const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platform, url, showThumbnailOptions }) => {
   const [uploading, setUploading] = useState(false);
