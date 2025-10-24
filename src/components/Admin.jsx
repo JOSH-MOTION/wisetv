@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../../lib/firebase';
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, serverTimestamp } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import { Upload, X, Edit, Trash2, Eye, EyeOff, Plus, Save, Loader, Download, Image, LogOut, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 
@@ -338,12 +338,22 @@ const Admin = () => {
 
   const fetchData = async () => {
     try {
-      const postsSnapshot = await getDocs(collection(db, 'posts'));
-      const postsData = postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const currentUserId = auth.currentUser?.uid;
+      if (!currentUserId) {
+        setPosts([]);
+        setSocialLinks([]);
+        return;
+      }
+
+      const postsQuery = query(collection(db, 'posts'), where('createdBy', '==', currentUserId));
+      const linksQuery = query(collection(db, 'socialLinks'), where('createdBy', '==', currentUserId));
+
+      const postsSnapshot = await getDocs(postsQuery);
+      const postsData = postsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setPosts(postsData);
 
-      const linksSnapshot = await getDocs(collection(db, 'socialLinks'));
-      const linksData = linksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const linksSnapshot = await getDocs(linksQuery);
+      const linksData = linksSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setSocialLinks(linksData);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -450,8 +460,10 @@ const Admin = () => {
             image: imageUrl || null,
             author: author || 'Anonymous',
             date: new Date().toISOString(),
+            createdAt: serverTimestamp(),
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
+            createdBy: user.uid,
           };
           await addDoc(collection(db, 'posts'), post);
         } else {
@@ -474,8 +486,10 @@ const Admin = () => {
             image: thumbnailOption === 'none' ? null : finalImageUrl,
             author: author || null,
             date: new Date().toISOString(),
+            createdAt: serverTimestamp(),
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
+            createdBy: user.uid,
           };
           await addDoc(collection(db, 'socialLinks'), link);
         }
