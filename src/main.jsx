@@ -7,6 +7,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
 import Documentaries from './pages/Documentaries';
 import News from './pages/News';
 import Reports from './pages/Reports';
@@ -70,6 +72,8 @@ function PublicRoutes() {
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/posts/:id" element={<BlogPost />} />
           <Route path="/documentaries" element={<Documentaries />} />
           <Route path="/news" element={<News />} />
           <Route path="/reports" element={<Reports />} />

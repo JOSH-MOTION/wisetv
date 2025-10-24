@@ -817,6 +817,7 @@ const Admin = () => {
                         required
                       >
                         <option value="">Select Category</option>
+                        <option value="blog">📝 Blog</option>
                         <option value="documentaries">🎬 Documentaries</option>
                         <option value="news">📰 News</option>
                         <option value="reports">📊 Reports</option>
@@ -876,6 +877,7 @@ const Admin = () => {
                           required
                         >
                           <option value="">Select Category</option>
+                          <option value="blog">📝 Blog</option>
                           <option value="documentaries">🎬 Documentaries</option>
                           <option value="news">📰 News</option>
                           <option value="reports">📊 Reports</option>
@@ -1116,7 +1118,7 @@ const Admin = () => {
                         <p className="text-xs text-gray-500 mb-4">
                           By: {post.author || 'Anonymous'}
                         </p>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -1134,6 +1136,27 @@ const Admin = () => {
                           >
                             <Trash2 size={16} className="mr-1" />
                             Delete
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={async () => {
+                              const url = `${window.location.origin}/posts/${post.id}`;
+                              try {
+                                if (navigator.share) {
+                                  await navigator.share({ title: post.title || 'Blog post', url });
+                                } else if (navigator.clipboard) {
+                                  await navigator.clipboard.writeText(url);
+                                  setSuccess('Link copied to clipboard');
+                                } else {
+                                  window.prompt('Copy this link', url);
+                                }
+                              } catch (_) {}
+                            }}
+                            className="flex-1 bg-gray-100 text-gray-800 px-4 py-2.5 rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center font-medium shadow-sm"
+                          >
+                            <Share2 size={16} className="mr-1" />
+                            Share
                           </motion.button>
                         </div>
                       </div>
