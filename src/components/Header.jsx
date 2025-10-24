@@ -108,6 +108,13 @@ const Header = () => {
             News
           </Link>
           <Link
+            to="/blog"
+            onClick={closeMenu}
+            className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-[#fc561c]"
+          >
+            Blog
+          </Link>
+          <Link
             to="/reports"
             onClick={closeMenu}
             className="block hover:text-gray-200 py-2 px-2 rounded transition-all duration-200 hover:bg-[#fc561c]"

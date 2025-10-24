@@ -212,6 +212,39 @@ const ImprovedAdmin = () => {
     setError(errorMessage);
   };
 
+  const getPostUrl = (id) => `${window.location.origin}/posts/${id}`;
+
+  const handleShare = async (post) => {
+    try {
+      const url = getPostUrl(post.id);
+      const title = post.title || 'Blog post';
+      if (navigator.share) {
+        await navigator.share({ title, url });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        setSuccess('Link copied to clipboard');
+      } else {
+        window.prompt('Copy this link', url);
+      }
+    } catch (_) {
+      // ignore user cancel
+    }
+  };
+
+  const handleCopyLink = async (post) => {
+    try {
+      const url = getPostUrl(post.id);
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        setSuccess('Link copied to clipboard');
+      } else {
+        window.prompt('Copy this link', url);
+      }
+    } catch (e) {
+      setError('Failed to copy link');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -301,6 +334,7 @@ const ImprovedAdmin = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
                 >
                   <option value="">Select Category</option>
+                  <option value="blog">Blog</option>
                   <option value="documentaries">Documentaries</option>
                   <option value="news">News</option>
                   <option value="reports">Reports</option>
@@ -493,7 +527,7 @@ const ImprovedAdmin = () => {
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">{post.content}</p>
                     <p className="text-xs text-gray-500 mb-4">By {post.author || 'Anonymous'}</p>
                     
-                    <div className="flex space-x-2">
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => handleEdit(post, 'regular')}
                         className="flex-1 bg-blue-600 text-white text-sm py-2 px-3 rounded hover:bg-blue-700 transition duration-200"
@@ -505,6 +539,18 @@ const ImprovedAdmin = () => {
                         className="flex-1 bg-[#fc561c] text-white text-sm py-2 px-3 rounded hover:bg-[#fc561c] transition duration-200"
                       >
                         Delete
+                      </button>
+                      <button
+                        onClick={() => handleShare(post)}
+                        className="flex-1 bg-gray-200 text-gray-800 text-sm py-2 px-3 rounded hover:bg-gray-300 transition duration-200"
+                      >
+                        Share
+                      </button>
+                      <button
+                        onClick={() => handleCopyLink(post)}
+                        className="flex-1 bg-gray-200 text-gray-800 text-sm py-2 px-3 rounded hover:bg-gray-300 transition duration-200"
+                      >
+                        Copy Link
                       </button>
                     </div>
                   </div>

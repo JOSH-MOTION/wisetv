@@ -11,6 +11,7 @@ const Footer = () => {
     { name: 'Home', path: '/' },
     { name: 'Documentaries', path: '/documentaries' },
     { name: 'News', path: '/news' },
+    { name: 'Blog', path: '/blog' },
     { name: 'Reports', path: '/reports' },
     { name: 'Interviews', path: '/interviews' },
     { name: 'Movies', path: '/movies' },
