@@ -1,7 +1,7 @@
 // src/components/ImprovedAdmin.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../../lib/firebase';
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, serverTimestamp } from 'firebase/firestore';
 import { getAuth, signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import CloudinaryUpload from './CloudinaryUpload';
@@ -30,7 +30,10 @@ const ImprovedAdmin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchData();
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      fetchData();
+    }
   }, []);
 
   useEffect(() => {
@@ -52,9 +55,17 @@ const ImprovedAdmin = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const currentUserId = auth.currentUser?.uid;
+      if (!currentUserId) {
+        setPosts([]);
+        setSocialLinks([]);
+        return;
+      }
+      const postsQuery = query(collection(db, 'posts'), where('createdBy', '==', currentUserId));
+      const linksQuery = query(collection(db, 'socialLinks'), where('createdBy', '==', currentUserId));
       const [postsSnapshot, linksSnapshot] = await Promise.all([
-        getDocs(collection(db, 'posts')),
-        getDocs(collection(db, 'socialLinks'))
+        getDocs(postsQuery),
+        getDocs(linksQuery)
       ]);
 
       const postsData = postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -120,8 +131,10 @@ const ImprovedAdmin = () => {
             image: imageUrl || null,
             author: author || 'Anonymous',
             date: new Date().toISOString(),
+            createdAt: serverTimestamp(),
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
+            createdBy: auth.currentUser?.uid || null,
           };
           await addDoc(collection(db, 'posts'), post);
         } else {
@@ -134,8 +147,10 @@ const ImprovedAdmin = () => {
             author: author || null,
             date: new Date().toISOString(),
             category: 'social',
+            createdAt: serverTimestamp(),
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
+            createdBy: auth.currentUser?.uid || null,
           };
           await addDoc(collection(db, 'socialLinks'), link);
         }

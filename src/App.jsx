@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { auth } from '../lib/firebase';
+import { auth, db } from '../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -34,12 +35,26 @@ function App() {
 // Admin routes component
 function AdminRoutes() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log('Admin auth state:', user ? `Logged in as ${user.email}` : 'Not logged in');
       setIsAuthenticated(!!user);
+      if (user) {
+        try {
+          const adminDocRef = doc(db, 'admins', user.uid);
+          const adminSnap = await getDoc(adminDocRef);
+          const role = adminSnap.exists() ? adminSnap.data().role : null;
+          setIsAdmin(role === 'admin');
+        } catch (e) {
+          console.error('Failed to verify admin role:', e);
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
       setLoading(false);
     });
     return () => unsubscribe();
@@ -59,16 +74,16 @@ function AdminRoutes() {
   return (
     <>
       {/* Show header for authenticated admin users */}
-      {isAuthenticated && <Header />}
+      {isAuthenticated && isAdmin && <Header />}
       
       <Routes>
-        <Route path="/login" element={!isAuthenticated ? <AdminLogin /> : <Navigate to="/admin" />} />
-        <Route path="/signup" element={!isAuthenticated ? <AdminSignup /> : <Navigate to="/admin" />} />
+        <Route path="/login" element={!isAuthenticated ? <AdminLogin /> : (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/admin/login" />)} />
+        <Route path="/signup" element={!isAuthenticated ? <AdminSignup /> : (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/admin/login" />)} />
         <Route
           path="/"
-          element={isAuthenticated ? <Admin /> : <Navigate to="/admin/login" />}
+          element={isAuthenticated && isAdmin ? <Admin /> : <Navigate to="/admin/login" />}
         />
-        <Route path="*" element={<Navigate to={isAuthenticated ? "/admin" : "/admin/login"} />} />
+        <Route path="*" element={<Navigate to={isAuthenticated && isAdmin ? "/admin" : "/admin/login"} />} />
       </Routes>
     </>
   );
