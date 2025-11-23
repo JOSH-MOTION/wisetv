@@ -569,7 +569,7 @@ const Admin = () => {
   const getPlatformPlaceholders = (platform) => {
     const placeholders = {
       instagram: 'https://instagram.com/p/ABC123xyz',
-      facebook: 'https://facebook.com/username/posts/123456',
+      facebook: 'https://web.facebook.com/profile.php?id=61582270771234',
       youtube: 'https://youtube.com/watch?v=ABC123xyz',
       twitter: 'https://twitter.com/username/status/123456',
       tiktok: 'https://tiktok.com/@username/video/123456'
