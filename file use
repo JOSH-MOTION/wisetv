@@ -452,6 +452,7 @@ const Admin = () => {
             date: new Date().toISOString(),
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
+            
           };
           await addDoc(collection(db, 'posts'), post);
         } else {

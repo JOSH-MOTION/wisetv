@@ -423,6 +423,7 @@ const Admin = () => {
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
             date: new Date().toISOString(),
+            views: 0
           });
         } else {
           if (!url || !category) return setError('URL and category are required for social posts.');
@@ -446,6 +447,7 @@ const Admin = () => {
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
             date: new Date().toISOString(),
+            views: 0,
           });
         }
         setSuccess('Post updated successfully! ✨');
@@ -464,6 +466,7 @@ const Admin = () => {
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
             createdBy: user.uid,
+            views: 0,
           };
           await addDoc(collection(db, 'posts'), post);
         } else {
@@ -490,6 +493,7 @@ const Admin = () => {
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
             createdBy: user.uid,
+            views: 0,
           };
           await addDoc(collection(db, 'socialLinks'), link);
         }

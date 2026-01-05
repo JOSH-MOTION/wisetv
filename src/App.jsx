@@ -15,9 +15,11 @@ import Photojournalism from './pages/Photojournalism';
 import Admin from './components/Admin';
 import AdminLogin from './components/AdminLogin';
 import AdminSignup from './components/AdminSignup';
+import { HelmetProvider } from 'react-helmet-async';
 
 function App() {
   return (
+    <HelmetProvider>
     <Router>
       <div className="App min-h-screen flex flex-col">
         <Routes>
@@ -29,6 +31,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+    </HelmetProvider>
   );
 }
 

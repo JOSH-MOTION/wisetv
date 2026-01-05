@@ -73,12 +73,13 @@ const Card = ({ item }) => {
         whileHover="hover"
         className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200/50 transition-all duration-300"
       >
-        <div className="relative aspect-video overflow-hidden">
+        {/* Fixed Image Container with proper aspect ratio */}
+        <div className="relative w-full h-48 overflow-hidden">
           <motion.img
             src={item.image || placeholderImage}
             alt={item.title}
             variants={imageVariants}
-            className="w-full h-32 object-cover"
+            className="w-full h-full object-cover"
             loading="lazy"
             onError={(e) => {
               e.target.src = placeholderImage;
@@ -143,7 +144,7 @@ const Card = ({ item }) => {
             <span className="inline-flex items-center bg-orange-500/10 text-orange-500 px-2.5 py-1 rounded-full text-xs font-semibold">
               {item.type === 'social' ? `${item.platform.toUpperCase()} - ${item.category.toUpperCase()}` : item.category.toUpperCase()}
             </span>
-            {item.views && (
+            {item.views !== undefined && (
               <div className="flex items-center text-gray-500 text-xs">
                 <Eye className="w-3 h-3 mr-1" />
                 {item.views.toLocaleString()}
