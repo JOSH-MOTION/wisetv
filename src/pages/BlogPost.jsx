@@ -101,35 +101,78 @@ const BlogPost = () => {
 
   const dateStr = post.date ? new Date(post.date).toLocaleDateString() : '';
   const postUrl = `${window.location.origin}/posts/${post.id}`;
-  const postImage = post.image || `${window.location.origin}/default-og-image.jpg`;
+  
+  // Create a high-quality fallback OG image if no image exists
+  const createFallbackOGImage = () => {
+    const svg = `
+      <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#fc561c;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ff8a5b;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="630" fill="url(#grad)"/>
+        <text x="50%" y="40%" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">
+          W-GH TV
+        </text>
+        <text x="50%" y="52%" font-family="Arial, sans-serif" font-size="28" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle" opacity="0.95">
+          ${(post.title || '').substring(0, 60).replace(/[<>&"]/g, '')}${post.title?.length > 60 ? '...' : ''}
+        </text>
+        <text x="50%" y="62%" font-family="Arial, sans-serif" font-size="20" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle" opacity="0.8">
+          ${post.category ? post.category.toUpperCase() : 'BLOG POST'}
+        </text>
+      </svg>
+    `;
+    return `data:image/svg+xml;base64,${btoa(svg)}`;
+  };
+  
+  const postImage = post.image || createFallbackOGImage();
+  const postDescription = post.content?.substring(0, 160).replace(/[<>&"]/g, '') || post.title || 'Read this article on W-GH TV';
 
   return (
     <>
-      {/* SEO and Open Graph Meta Tags for proper sharing */}
+      {/* Enhanced SEO and Open Graph Meta Tags for social sharing */}
       <Helmet>
         <title>{post.title} - W-GH TV</title>
-        <meta name="description" content={post.content?.substring(0, 160) || post.title} />
+        <meta name="description" content={postDescription} />
         
-        {/* Open Graph / Facebook */}
+        {/* Open Graph / Facebook / WhatsApp */}
+        <meta property="og:site_name" content="W-GH TV" />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={postUrl} />
         <meta property="og:title" content={post.title} />
-        <meta property="og:description" content={post.content?.substring(0, 160) || post.title} />
+        <meta property="og:description" content={postDescription} />
         <meta property="og:image" content={postImage} />
+        <meta property="og:image:secure_url" content={postImage} />
+        <meta property="og:image:type" content={post.image ? "image/jpeg" : "image/svg+xml"} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={post.title} />
+        <meta property="og:locale" content="en_US" />
         
         {/* Twitter */}
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={postUrl} />
-        <meta property="twitter:title" content={post.title} />
-        <meta property="twitter:description" content={post.content?.substring(0, 160) || post.title} />
-        <meta property="twitter:image" content={postImage} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@wghtv" />
+        <meta name="twitter:creator" content={post.author ? `@${post.author}` : "@wghtv"} />
+        <meta name="twitter:url" content={postUrl} />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={postDescription} />
+        <meta name="twitter:image" content={postImage} />
+        <meta name="twitter:image:alt" content={post.title} />
         
         {/* Article specific */}
         <meta property="article:published_time" content={post.date} />
         <meta property="article:author" content={post.author || 'Anonymous'} />
         {post.category && <meta property="article:section" content={post.category} />}
+        <meta property="article:tag" content={post.category} />
+        
+        {/* Additional meta tags for better indexing and sharing */}
+        <link rel="canonical" href={postUrl} />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content={post.author || 'W-GH TV'} />
+        {post.instagramHandle && <meta name="instagram:handle" content={post.instagramHandle} />}
+        {post.facebookHandle && <meta name="facebook:handle" content={post.facebookHandle} />}
       </Helmet>
 
       <div className="pt-20 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -183,31 +226,59 @@ const BlogPost = () => {
               ))}
             </div>
 
-            {/* Share Buttons at bottom */}
+            {/* Social Handles */}
+            {(post.instagramHandle || post.facebookHandle) && (
+              <div className="mt-8 p-6 bg-slate-100 rounded-xl">
+                <h3 className="text-lg font-semibold text-slate-900 mb-3">Connect with the author</h3>
+                <div className="space-y-2">
+                  {post.instagramHandle && (
+                    <p className="text-slate-700">
+                      📱 Instagram: <a href={`https://instagram.com/${post.instagramHandle.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-[#fc561c] hover:underline">{post.instagramHandle}</a>
+                    </p>
+                  )}
+                  {post.facebookHandle && (
+                    <p className="text-slate-700">
+                      👥 Facebook: <a href={`https://facebook.com/${post.facebookHandle.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-[#fc561c] hover:underline">{post.facebookHandle}</a>
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Enhanced Share Section */}
             <div className="mt-12 pt-8 border-t border-slate-200">
               <h3 className="text-lg font-semibold text-slate-900 mb-4">Share this article</h3>
-              <div className="flex gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <button
                   onClick={() => {
                     const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`;
                     window.open(url, '_blank', 'width=600,height=400');
                   }}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
                 >
-                  Share on Facebook
+                  Facebook
                 </button>
                 <button
                   onClick={() => {
                     const url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}`;
                     window.open(url, '_blank', 'width=600,height=400');
                   }}
-                  className="px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors"
+                  className="px-4 py-3 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors font-medium text-sm"
                 >
-                  Share on Twitter
+                  Twitter
+                </button>
+                <button
+                  onClick={() => {
+                    const url = `https://wa.me/?text=${encodeURIComponent(post.title + ' ' + postUrl)}`;
+                    window.open(url, '_blank');
+                  }}
+                  className="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+                >
+                  WhatsApp
                 </button>
                 <button
                   onClick={tryShare}
-                  className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                  className="px-4 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors font-medium text-sm"
                 >
                   Copy Link
                 </button>
