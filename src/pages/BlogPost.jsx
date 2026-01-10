@@ -102,77 +102,60 @@ const BlogPost = () => {
   const dateStr = post.date ? new Date(post.date).toLocaleDateString() : '';
   const postUrl = `${window.location.origin}/posts/${post.id}`;
   
-  // Create a high-quality fallback OG image if no image exists
-  const createFallbackOGImage = () => {
-    const svg = `
-      <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#fc561c;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#ff8a5b;stop-opacity:1" />
-          </linearGradient>
-        </defs>
-        <rect width="1200" height="630" fill="url(#grad)"/>
-        <text x="50%" y="40%" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">
-          W-GH TV
-        </text>
-        <text x="50%" y="52%" font-family="Arial, sans-serif" font-size="28" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle" opacity="0.95">
-          ${(post.title || '').substring(0, 60).replace(/[<>&"]/g, '')}${post.title?.length > 60 ? '...' : ''}
-        </text>
-        <text x="50%" y="62%" font-family="Arial, sans-serif" font-size="20" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle" opacity="0.8">
-          ${post.category ? post.category.toUpperCase() : 'BLOG POST'}
-        </text>
-      </svg>
-    `;
-    return `data:image/svg+xml;base64,${btoa(svg)}`;
-  };
+  // ✅ CRITICAL FIX: Use a real hosted default image instead of data URI
+  // If post has no image, use your site logo or a default hosted image
+  const DEFAULT_OG_IMAGE = 'https://res.cloudinary.com/dfff3hdrf/image/upload/v1768046400/default-og-image_f5hzm7.png';
   
-  const postImage = post.image || createFallbackOGImage();
+  // ✅ MUST be absolute HTTPS URL - WhatsApp/Facebook won't accept data URIs or relative URLs
+  const postImage = post.image && post.image.startsWith('http') 
+    ? post.image 
+    : DEFAULT_OG_IMAGE;
+  
   const postDescription = post.content?.substring(0, 160).replace(/[<>&"]/g, '') || post.title || 'Read this article on W-GH TV';
+  const postTitle = post.title || 'W-GH TV Blog Post';
 
   return (
     <>
-      {/* Enhanced SEO and Open Graph Meta Tags for social sharing */}
+      {/* ✅ FIXED: Enhanced SEO and Open Graph Meta Tags for social sharing */}
       <Helmet>
-        <title>{post.title} - W-GH TV</title>
+        <title>{postTitle} - W-GH TV</title>
         <meta name="description" content={postDescription} />
         
-        {/* Open Graph / Facebook / WhatsApp */}
+        {/* ✅ Open Graph / Facebook / WhatsApp - MUST BE ABSOLUTE HTTPS URLS */}
         <meta property="og:site_name" content="W-GH TV" />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={postUrl} />
-        <meta property="og:title" content={post.title} />
+        <meta property="og:title" content={postTitle} />
         <meta property="og:description" content={postDescription} />
+        
+        {/* ✅ CRITICAL: Must be absolute HTTPS URL to real image file */}
         <meta property="og:image" content={postImage} />
         <meta property="og:image:secure_url" content={postImage} />
-        <meta property="og:image:type" content={post.image ? "image/jpeg" : "image/svg+xml"} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content={post.title} />
+        <meta property="og:image:alt" content={postTitle} />
         <meta property="og:locale" content="en_US" />
         
-        {/* Twitter */}
+        {/* ✅ Twitter Card - same requirements */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@wghtv" />
         <meta name="twitter:creator" content={post.author ? `@${post.author}` : "@wghtv"} />
         <meta name="twitter:url" content={postUrl} />
-        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:title" content={postTitle} />
         <meta name="twitter:description" content={postDescription} />
         <meta name="twitter:image" content={postImage} />
-        <meta name="twitter:image:alt" content={post.title} />
+        <meta name="twitter:image:alt" content={postTitle} />
         
         {/* Article specific */}
-        <meta property="article:published_time" content={post.date} />
-        <meta property="article:author" content={post.author || 'Anonymous'} />
+        {post.date && <meta property="article:published_time" content={post.date} />}
+        <meta property="article:author" content={post.author || 'W-GH TV'} />
         {post.category && <meta property="article:section" content={post.category} />}
-        <meta property="article:tag" content={post.category} />
+        {post.category && <meta property="article:tag" content={post.category} />}
         
-        {/* Additional meta tags for better indexing and sharing */}
+        {/* Additional meta tags */}
         <link rel="canonical" href={postUrl} />
         <meta name="robots" content="index, follow" />
         <meta name="author" content={post.author || 'W-GH TV'} />
-        {post.instagramHandle && <meta name="instagram:handle" content={post.instagramHandle} />}
-        {post.facebookHandle && <meta name="facebook:handle" content={post.facebookHandle} />}
       </Helmet>
 
       <div className="pt-20 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
