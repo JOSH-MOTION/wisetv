@@ -7,11 +7,12 @@
     "dev": "vite",
     "build": "vite build && node sitemap-generator.cjs",
     "lint": "eslint .",
-    "postbuild": "react-snap",
     "preview": "vite preview"
   },
   "reactSnap": { 
   "inlineCss": true,
+  "source": "dist",       
+  "destination": "dist",
   "minifyHtml": {
     "collapseWhitespace": false,
     "removeComments": false
