@@ -7,8 +7,32 @@
     "dev": "vite",
     "build": "vite build && node sitemap-generator.cjs",
     "lint": "eslint .",
+    "postbuild": "react-snap",
     "preview": "vite preview"
   },
+  "reactSnap": { 
+  "inlineCss": true,
+  "minifyHtml": {
+    "collapseWhitespace": false,
+    "removeComments": false
+  },
+  "puppeteerArgs": [
+    "--no-sandbox",
+    "--disable-setuid-sandbox"
+  ],
+  "include": [
+    "/",
+    "/blog",
+    "/documentaries",
+    "/news",
+    "/reports",
+    "/interviews",
+    "/movies",
+    "/photojournalism"
+  ],
+  "crawl": true,
+  "waitFor": 1000
+},
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
     "firebase": "^10.14.1",
