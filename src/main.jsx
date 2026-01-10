@@ -112,7 +112,7 @@
 
 
 import React from 'react';
-import { hydrate, render } from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { auth } from '../lib/firebase';
@@ -208,29 +208,11 @@ function App() {
   );
 }
 
-// ✅ CRITICAL FOR PRE-RENDERING: 
-// Use hydrate for pre-rendered pages (from react-snap)
-// Use render for normal client-side rendering
-const rootElement = document.getElementById('root');
-
-if (rootElement.hasChildNodes()) {
-  // Page was pre-rendered by react-snap, use hydrate
-  hydrate(
-    <React.StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </React.StrictMode>,
-    rootElement
-  );
-} else {
-  // Normal client-side rendering
-  render(
-    <React.StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </React.StrictMode>,
-    rootElement
-  );
-}
+// ✅ CLEAN: Normal React 18 rendering (no hydrate, no react-snap)
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
