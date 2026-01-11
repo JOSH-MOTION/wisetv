@@ -48,6 +48,16 @@ const BlogPost = () => {
     load();
   }, [load]);
 
+  const handleBack = () => {
+    // Check if there's history to go back to
+    if (window.history.length > 2) {
+      navigate(-1);
+    } else {
+      // If no history, go to blog page
+      navigate('/blog');
+    }
+  };
+
   const tryShare = async () => {
     if (!post) return;
     const url = `${window.location.origin}/posts/${post.id}`;
@@ -88,7 +98,7 @@ const BlogPost = () => {
     return (
       <div className="pt-20 min-h-screen container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
-          <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6">
+          <button onClick={handleBack} className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6">
             <ArrowLeft size={18} /> Back
           </button>
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">{error}</div>
@@ -102,11 +112,7 @@ const BlogPost = () => {
   const dateStr = post.date ? new Date(post.date).toLocaleDateString() : '';
   const postUrl = `${window.location.origin}/posts/${post.id}`;
   
-  // ✅ CRITICAL FIX: Use a real hosted default image instead of data URI
-  // If post has no image, use your site logo or a default hosted image
   const DEFAULT_OG_IMAGE = 'https://res.cloudinary.com/dfff3hdrf/image/upload/v1768046400/default-og-image_f5hzm7.png';
-  
-  // ✅ MUST be absolute HTTPS URL - WhatsApp/Facebook won't accept data URIs or relative URLs
   const postImage = post.image && post.image.startsWith('http') 
     ? post.image 
     : DEFAULT_OG_IMAGE;
@@ -116,19 +122,16 @@ const BlogPost = () => {
 
   return (
     <>
-      {/* ✅ FIXED: Enhanced SEO and Open Graph Meta Tags for social sharing */}
       <Helmet>
         <title>{postTitle} - W-GH TV</title>
         <meta name="description" content={postDescription} />
         
-        {/* ✅ Open Graph / Facebook / WhatsApp - MUST BE ABSOLUTE HTTPS URLS */}
         <meta property="og:site_name" content="W-GH TV" />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={postUrl} />
         <meta property="og:title" content={postTitle} />
         <meta property="og:description" content={postDescription} />
         
-        {/* ✅ CRITICAL: Must be absolute HTTPS URL to real image file */}
         <meta property="og:image" content={postImage} />
         <meta property="og:image:secure_url" content={postImage} />
         <meta property="og:image:width" content="1200" />
@@ -136,7 +139,6 @@ const BlogPost = () => {
         <meta property="og:image:alt" content={postTitle} />
         <meta property="og:locale" content="en_US" />
         
-        {/* ✅ Twitter Card - same requirements */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@wghtv" />
         <meta name="twitter:creator" content={post.author ? `@${post.author}` : "@wghtv"} />
@@ -146,13 +148,11 @@ const BlogPost = () => {
         <meta name="twitter:image" content={postImage} />
         <meta name="twitter:image:alt" content={postTitle} />
         
-        {/* Article specific */}
         {post.date && <meta property="article:published_time" content={post.date} />}
         <meta property="article:author" content={post.author || 'W-GH TV'} />
         {post.category && <meta property="article:section" content={post.category} />}
         {post.category && <meta property="article:tag" content={post.category} />}
         
-        {/* Additional meta tags */}
         <link rel="canonical" href={postUrl} />
         <meta name="robots" content="index, follow" />
         <meta name="author" content={post.author || 'W-GH TV'} />
@@ -162,10 +162,16 @@ const BlogPost = () => {
         <article className="container mx-auto px-4 py-10">
           <div className="max-w-3xl mx-auto">
             <div className="flex items-center justify-between mb-6">
-              <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900">
-                <ArrowLeft size={18} /> Back
+              <button 
+                onClick={handleBack} 
+                className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
+              >
+                <ArrowLeft size={18} /> Back to Blog
               </button>
-              <button onClick={tryShare} className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900">
+              <button 
+                onClick={tryShare} 
+                className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
+              >
                 <Share2 size={18} /> Share
               </button>
             </div>
@@ -182,7 +188,7 @@ const BlogPost = () => {
             
             <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-8">
               {post.category && (
-                <Link to={`/${post.category}`} className="uppercase tracking-wide text-[#fc561c] font-semibold">
+                <Link to={`/${post.category}`} className="uppercase tracking-wide text-[#fc561c] font-semibold hover:underline">
                   {post.category}
                 </Link>
               )}
@@ -209,7 +215,6 @@ const BlogPost = () => {
               ))}
             </div>
 
-            {/* Social Handles */}
             {(post.instagramHandle || post.facebookHandle) && (
               <div className="mt-8 p-6 bg-slate-100 rounded-xl">
                 <h3 className="text-lg font-semibold text-slate-900 mb-3">Connect with the author</h3>
@@ -228,7 +233,6 @@ const BlogPost = () => {
               </div>
             )}
 
-            {/* Enhanced Share Section */}
             <div className="mt-12 pt-8 border-t border-slate-200">
               <h3 className="text-lg font-semibold text-slate-900 mb-4">Share this article</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
