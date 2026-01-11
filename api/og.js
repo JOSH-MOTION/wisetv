@@ -17,12 +17,41 @@ const db = getFirestore(app);
 export default async function handler(req, res) {
   const { id } = req.query;
   
+  // DEFAULT OG (homepage / no post ID)
   if (!id) {
-    return res.status(400).send('Missing post ID');
+    const defaultImage = 'https://res.cloudinary.com/dfff3hdrf/image/upload/v1768046400/default-og-image_f5hzm7.png';
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+    return res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>W-GH TV – Empowering the Next Generation</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://w-ghtv.com" />
+  <meta property="og:title" content="W-GH TV – Empowering the Next Generation" />
+  <meta property="og:description" content="News, documentaries, interviews and inspiring African stories." />
+  <meta property="og:image" content="${defaultImage}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="W-GH TV" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="W-GH TV – Empowering the Next Generation" />
+  <meta name="twitter:description" content="News, documentaries, interviews and inspiring African stories." />
+  <meta name="twitter:image" content="${defaultImage}" />
+  <meta http-equiv="refresh" content="0;url=/" />
+  <link rel="canonical" href="https://w-ghtv.com" />
+</head>
+<body>
+  <h1>W-GH TV – Empowering the Next Generation</h1>
+  <p>Loading...</p>
+</body>
+</html>`);
   }
 
+  // FETCH POST-SPECIFIC DATA
   try {
-    // Fetch post from Firebase
     const postRef = doc(db, 'posts', id);
     const postSnap = await getDoc(postRef);
     
@@ -54,7 +83,7 @@ export default async function handler(req, res) {
   <meta property="og:description" content="${description || 'Read this article on W-GH TV'}">
   <meta property="og:image" content="${postImage}">
   <meta property="og:image:secure_url" content="${postImage}">
-  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="${title}">
@@ -91,6 +120,6 @@ export default async function handler(req, res) {
 </html>`);
   } catch (error) {
     console.error('Error fetching post:', error);
-    res.status(500).send('Internal server error');
+    res.status(500).send('Internal server error: ' + error.message);
   }
 }
