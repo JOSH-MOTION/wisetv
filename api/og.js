@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   
   // DEFAULT OG (homepage / no post ID)
   if (!id) {
-    const defaultImage = 'https://res.cloudinary.com/dfff3hdrf/image/upload/v1768046400/default-og-image_f5hzm7.png';
+    const defaultImage = '../assets/WISE.svg';
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600');
     return res.send(`<!DOCTYPE html>
