@@ -19,7 +19,8 @@ export default async function handler(req, res) {
   
   // DEFAULT OG (homepage / no post ID)
   if (!id) {
-    const defaultImage = '../assets/WISE.svg';
+    // Updated to use WiseLogo.png instead of the old default image
+    const defaultImage = 'https://w-ghtv.com/WiseLogo.png';
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600');
     return res.send(`<!DOCTYPE html>
@@ -60,7 +61,8 @@ export default async function handler(req, res) {
     }
     
     const post = postSnap.data();
-    const postImage = post.image || 'https://res.cloudinary.com/dfff3hdrf/image/upload/v1768046400/default-og-image_f5hzm7.png';
+    // Updated default image to use WiseLogo.png
+    const postImage = post.image || 'https://w-ghtv.com/WiseLogo.png';
     const description = (post.content || '').substring(0, 160).replace(/[<>&"]/g, '');
     const title = (post.title || 'Blog Post').replace(/[<>&"]/g, '');
     const author = (post.author || 'W-GH TV').replace(/[<>&"]/g, '');
