@@ -5,6 +5,127 @@ import { db } from '../../lib/firebase';
 import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import { ArrowLeft, Calendar, User, Share2, Eye } from 'lucide-react';
 
+// Helper function to extract YouTube video ID
+const getYouTubeVideoId = (url) => {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?#\s]+)/,
+    /youtube\.com\/watch\?.*v=([^&?#\s]+)/,
+    /youtu\.be\/([^&?#\s]+)/,
+    /youtube\.com\/embed\/([^&?#\s]+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) return match[1];
+  }
+  return null;
+};
+
+// Component to render YouTube embed
+const YouTubeEmbed = ({ url }) => {
+  const videoId = getYouTubeVideoId(url);
+  
+  if (!videoId) return null;
+  
+  return (
+    <div className="my-6 relative w-full" style={{ paddingBottom: '56.25%' }}>
+      <iframe
+        className="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg"
+        src={`https://www.youtube.com/embed/${videoId}`}
+        title="YouTube video"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  );
+};
+
+// Component to process and render content with embedded videos and links
+const RichContent = ({ content }) => {
+  if (!content) return null;
+
+  // Split content by double line breaks to create paragraphs
+  const paragraphs = content.split(/\n\n+/);
+
+  return (
+    <div className="prose prose-slate max-w-none">
+      {paragraphs.map((para, idx) => {
+        // Check if paragraph contains a YouTube link
+        const youtubeMatch = para.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?#\s]+)/);
+        
+        if (youtubeMatch) {
+          const [youtubeUrl] = youtubeMatch;
+          // Split the paragraph at the YouTube link
+          const parts = para.split(youtubeUrl);
+          
+          return (
+            <div key={idx}>
+              {parts[0] && (
+                <p className="mb-4 text-slate-700 leading-relaxed">
+                  {renderTextWithLinks(parts[0])}
+                </p>
+              )}
+              <YouTubeEmbed url={youtubeUrl} />
+              {parts[1] && (
+                <p className="mt-4 text-slate-700 leading-relaxed">
+                  {renderTextWithLinks(parts[1])}
+                </p>
+              )}
+            </div>
+          );
+        }
+        
+        // Regular paragraph with link detection
+        return (
+          <p key={idx} className="mb-4 text-slate-700 leading-relaxed">
+            {renderTextWithLinks(para)}
+          </p>
+        );
+      })}
+    </div>
+  );
+};
+
+// Helper function to render text with clickable links
+const renderTextWithLinks = (text) => {
+  // Regular expression to match URLs (excluding YouTube URLs which are handled separately)
+  const urlPattern = /https?:\/\/(?!(?:www\.)?(?:youtube\.com|youtu\.be))([^\s]+)/g;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = urlPattern.exec(text)) !== null) {
+    // Add text before the link
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+    
+    // Add the link
+    const url = match[0];
+    parts.push(
+      <a
+        key={match.index}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-[#fc561c] hover:underline font-medium"
+      >
+        {url}
+      </a>
+    );
+    
+    lastIndex = match.index + url.length;
+  }
+  
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+  
+  return parts.length > 0 ? parts : text;
+};
+
 const BlogPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -152,6 +273,7 @@ const BlogPost = () => {
         <meta property="article:author" content={post.author || 'W-GH TV'} />
         {post.category && <meta property="article:section" content={post.category} />}
         {post.category && <meta property="article:tag" content={post.category} />}
+        {post.subcategory && <meta property="article:tag" content={post.subcategory} />}
         
         <link rel="canonical" href={postUrl} />
         <meta name="robots" content="index, follow" />
@@ -166,7 +288,7 @@ const BlogPost = () => {
                 onClick={handleBack} 
                 className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
               >
-                <ArrowLeft size={18} /> Back to Blog
+                <ArrowLeft size={18} /> Back to {post.category || 'Blog'}
               </button>
               <button 
                 onClick={tryShare} 
@@ -188,9 +310,19 @@ const BlogPost = () => {
             
             <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-8">
               {post.category && (
-                <Link to={`/${post.category}`} className="uppercase tracking-wide text-[#fc561c] font-semibold hover:underline">
-                  {post.category}
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link to={`/${post.category}`} className="uppercase tracking-wide text-[#fc561c] font-semibold hover:underline">
+                    {post.category}
+                  </Link>
+                  {post.subcategory && (
+                    <>
+                      <span className="text-slate-400">/</span>
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
+                        {post.subcategory}
+                      </span>
+                    </>
+                  )}
+                </div>
               )}
               {dateStr && (
                 <span className="inline-flex items-center gap-1">
@@ -209,11 +341,7 @@ const BlogPost = () => {
               )}
             </div>
 
-            <div className="prose prose-slate max-w-none">
-              {(post.content || '').split(/\n\n+/).map((para, idx) => (
-                <p key={idx} className="mb-4 text-slate-700 leading-relaxed">{para}</p>
-              ))}
-            </div>
+            <RichContent content={post.content} />
 
             {(post.instagramHandle || post.facebookHandle) && (
               <div className="mt-8 p-6 bg-slate-100 rounded-xl">

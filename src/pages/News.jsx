@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../../lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaSearch } from 'react-icons/fa';
 import { FaTiktok, FaXTwitter } from 'react-icons/fa6';
 import { Mail, Phone, MapPin, ArrowUp, Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
 import { Play, Clock, Eye } from 'lucide-react';
-import Card from './Card'; // Import the reusable Card component
+import Card from './Card';
 
 // Import placeholder images from assets
 import pic1 from '../assets/pic1.jpg';
@@ -25,11 +26,11 @@ const News = () => {
 
   const socialLinks = [
     { name: 'Instagram', icon: <Instagram className="w-5 h-5" />, url: 'https://www.instagram.com/w_gh.tv?igsh=MXZzczd4amoxbmE1cQ==' },
-  { name: 'Facebook', icon: <Facebook className="w-5 h-5" />, url: 'https://web.facebook.com/profile.php?id=61582270771234' },
-  { name: 'YouTube', icon: <Youtube className="w-5 h-5" />, url: 'https://www.youtube.com/@Wgh_Tv' },
-  { name: 'X (Twitter)', icon: <FaXTwitter className="w-5 h-5" />, url: 'https://x.com/w_gh_tv' },
-  { name: 'TikTok', icon: <FaTiktok className="w-5 h-5" />, url: 'https://www.tiktok.com/@wgh.tv?is_from_webapp=1&sender_device=pc' },
-];
+    { name: 'Facebook', icon: <Facebook className="w-5 h-5" />, url: 'https://web.facebook.com/profile.php?id=61582270771234' },
+    { name: 'YouTube', icon: <Youtube className="w-5 h-5" />, url: 'https://www.youtube.com/@Wgh_Tv' },
+    { name: 'X (Twitter)', icon: <FaXTwitter className="w-5 h-5" />, url: 'https://x.com/w_gh_tv' },
+    { name: 'TikTok', icon: <FaTiktok className="w-5 h-5" />, url: 'https://www.tiktok.com/@wgh.tv?is_from_webapp=1&sender_device=pc' },
+  ];
 
   const mockPosts = [
     {
@@ -38,6 +39,7 @@ const News = () => {
       content: 'The effects of climate change are becoming more evident with rising global temperatures, melting ice caps, and extreme weather events. Scientists urge immediate action to mitigate these impacts.',
       date: '2025-04-10T10:00:00',
       category: 'news',
+      subcategory: 'Climate & Environment',
       image: pic1,
       author: 'Environmental News',
       views: 12345,
@@ -48,6 +50,7 @@ const News = () => {
       content: 'In a surprising turn of events, East Bengal and Kerala Blasters faced a tough defeat in the latest football match, leaving fans in shock.',
       date: '2025-04-09T15:30:00',
       category: 'news',
+      subcategory: 'Sports',
       image: pic2,
       author: 'Sports Desk',
       views: 9876,
@@ -58,6 +61,7 @@ const News = () => {
       content: 'Former UK Prime Minister Boris Johnson comments on the easing of lockdown restrictions and its implications for the economy and public health.',
       date: '2025-04-08T12:00:00',
       category: 'news',
+      subcategory: 'Politics',
       image: pic3,
       author: 'Political Correspondent',
       views: 7654,
@@ -68,6 +72,7 @@ const News = () => {
       content: 'Advancements in robotics are paving the way for automation in industries, raising questions about the future of human labor.',
       date: '2025-04-07T09:00:00',
       category: 'news',
+      subcategory: 'Technology',
       image: pic4,
       author: 'Tech Insights',
       views: 5432,
@@ -78,6 +83,7 @@ const News = () => {
       content: 'Scientists have developed a new method to harness renewable energy, potentially revolutionizing the energy sector.',
       date: '2025-04-06T14:00:00',
       category: 'news',
+      subcategory: 'Health & Science',
       image: pic5,
       author: 'Science Weekly',
       views: 8765,
@@ -88,6 +94,7 @@ const News = () => {
       content: 'A recent report highlights the alarming amount of recycling waste being dumped each year, calling for better waste management systems.',
       date: '2025-04-05T11:00:00',
       category: 'news',
+      subcategory: 'Climate & Environment',
       image: pic1,
       author: 'Eco Watch',
       views: 6543,
@@ -98,16 +105,18 @@ const News = () => {
       content: 'A new initiative aims to combat vaccine misinformation by providing transparent and scientifically accurate information to the public.',
       date: '2025-04-04T13:00:00',
       category: 'news',
+      subcategory: 'Health & Science',
       image: pic2,
       author: 'Health Matters',
       views: 9876,
     },
     {
       id: 8,
-      title: 'What We’re Looking Forward to in 2025 For',
+      title: "What We're Looking Forward to in 2025 For",
       content: 'A roundup of the most anticipated events, innovations, and trends expected in 2025 across various sectors.',
       date: '2025-04-03T10:00:00',
       category: 'news',
+      subcategory: 'Business & Economy',
       image: pic3,
       author: 'Future Trends',
       views: 4321,
@@ -149,7 +158,6 @@ const News = () => {
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
-    // Mock newsletter signup logic
     alert(`Subscribed with email: ${email}`);
     setEmail('');
   };
@@ -158,8 +166,8 @@ const News = () => {
     const shareUrls = {
       Facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(post.title)}`,
       X: `https://x.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(window.location.href)}`,
-      Instagram: 'https://www.instagram.com', // Instagram doesn't have direct sharing via URL
-      YouTube: 'https://www.youtube.com', // YouTube doesn't have direct sharing via URL
+      Instagram: 'https://www.instagram.com',
+      YouTube: 'https://www.youtube.com',
     };
     if (platform === 'Instagram' || platform === 'YouTube') {
       alert(`Please share "${post.title}" manually on ${platform}!`);
@@ -170,26 +178,45 @@ const News = () => {
 
   const displayPosts = posts.length > 0 ? posts : mockPosts;
 
-  const filteredPosts = displayPosts.filter(
-    (post) =>
-      post.title.toLowerCase().includes(searchQuery) &&
-      (selectedCategory === 'all' || post.category.toLowerCase() === selectedCategory)
-  );
+  // FIXED: Updated filtering logic to check subcategory field
+  const filteredPosts = displayPosts.filter((post) => {
+    const matchesSearch = 
+      post.title.toLowerCase().includes(searchQuery) ||
+      post.content.toLowerCase().includes(searchQuery) ||
+      (post.author || '').toLowerCase().includes(searchQuery);
+    
+    const matchesCategory = 
+      selectedCategory === 'all' || 
+      (post.subcategory && post.subcategory.toLowerCase().includes(selectedCategory.toLowerCase()));
+    
+    return matchesSearch && matchesCategory;
+  });
 
-  const categories = ['all', 'climate', 'sports', 'politics', 'technology', 'health', 'trending'];
+  // News subcategories from the admin
+  const categories = [
+    'all',
+    'Politics',
+    'Business & Economy', 
+    'Technology',
+    'Health & Science',
+    'Sports',
+    'Entertainment',
+    'Climate & Environment',
+    'Education',
+    'Crime & Justice',
+    'Social Issues'
+  ];
 
   return (
     <div className="pt-20 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Error Display */}
       {error && (
         <div className="container mx-auto px-4 py-4">
-          <div className="bg-[#fc561c]50 border border-[#fc561c] text-[#fc561c] px-4 py-3 rounded-lg">
-            {error}
-          </div>
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">{error}</div>
         </div>
       )}
 
-      {/* Hero Section (Main News) */}
+      {/* Hero Section (Main News) - FIXED: Added View button */}
       {filteredPosts.length > 0 && (
         <section className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop')] bg-cover bg-center opacity-20"></div>
@@ -215,6 +242,11 @@ const News = () => {
                       {filteredPosts[0].views.toLocaleString()}
                     </span>
                   )}
+                  {filteredPosts[0].subcategory && (
+                    <span className="inline-flex items-center bg-blue-500/20 border border-blue-500/30 rounded-full px-3 py-1 text-xs font-medium text-blue-400">
+                      {filteredPosts[0].subcategory}
+                    </span>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   {socialLinks.map((platform) => (
@@ -229,12 +261,22 @@ const News = () => {
                   ))}
                 </div>
               </div>
-              <button
-                onClick={() => toggleExpand(filteredPosts[0].id)}
-                className="inline-flex items-center bg-[#fc561c] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#fc561c] transition-all duration-300"
-              >
-                {expandedPost === filteredPosts[0].id ? 'Read Less' : 'Read More'}
-              </button>
+              <div className="flex gap-4">
+                {/* FIXED: Added View/Read Full Article button */}
+                <Link
+                  to={`/posts/${filteredPosts[0].id}`}
+                  className="inline-flex items-center bg-[#fc561c] text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-all duration-300"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Read Full Article
+                </Link>
+                <button
+                  onClick={() => toggleExpand(filteredPosts[0].id)}
+                  className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-full font-semibold hover:bg-white/20 transition-all duration-300"
+                >
+                  {expandedPost === filteredPosts[0].id ? 'Show Less' : 'Show Preview'}
+                </button>
+              </div>
               {expandedPost === filteredPosts[0].id && (
                 <div className="mt-6 text-slate-300 bg-white/10 backdrop-blur-sm p-6 rounded-lg">
                   <p>{filteredPosts[0].content}</p>
@@ -262,14 +304,14 @@ const News = () => {
             {categories.map((category) => (
               <button
                 key={category}
-                onClick={() => handleCategoryChange(category)}
+                onClick={() => handleCategoryChange(category.toLowerCase())}
                 className={`px-4 py-2 rounded-full font-medium ${
-                  selectedCategory === category
+                  selectedCategory === category.toLowerCase()
                     ? 'bg-[#fc561c] text-white'
                     : 'bg-slate-200 text-slate-900 hover:bg-slate-300'
                 } transition-colors`}
               >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
+                {category}
               </button>
             ))}
           </div>
@@ -298,10 +340,12 @@ const News = () => {
       {/* News Grid */}
       <section className="container mx-auto px-4 py-16">
         <div className="flex items-center justify-between mb-12">
-          <h2 className="text-3xl font-bold text-slate-900">Latest News</h2>
+          <h2 className="text-3xl font-bold text-slate-900">
+            {selectedCategory === 'all' ? 'Latest News' : `${categories.find(c => c.toLowerCase() === selectedCategory) || 'News'}`}
+          </h2>
           <div className="hidden md:flex items-center gap-2 text-sm text-slate-500">
             <Clock className="w-4 h-4" />
-            <span>{filteredPosts.length} news articles available</span>
+            <span>{filteredPosts.length} news article{filteredPosts.length !== 1 ? 's' : ''} available</span>
           </div>
         </div>
         {loading ? (
@@ -334,7 +378,11 @@ const News = () => {
               <Play className="w-12 h-12 text-slate-400" />
             </div>
             <h3 className="text-2xl font-semibold text-slate-900 mb-2">No News Available</h3>
-            <p className="text-slate-600">Check back later for new news releases!</p>
+            <p className="text-slate-600">
+              {selectedCategory !== 'all' 
+                ? `No news found in ${categories.find(c => c.toLowerCase() === selectedCategory) || 'this category'}. Try selecting "All" or a different category.`
+                : 'Check back later for new news releases!'}
+            </p>
           </div>
         )}
       </section>
@@ -342,7 +390,7 @@ const News = () => {
       {/* Newsletter Signup */}
       <section className="bg-gradient-to-r from-slate-900 to-slate-800 text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Stay Informed with WISE TV</h2>
+          <h2 className="text-3xl font-bold mb-4">Stay Informed with W-GH TV</h2>
           <p className="text-slate-300 mb-8 max-w-2xl mx-auto">
             Subscribe to our newsletter for the latest news, updates, and exclusive content delivered straight to your inbox.
           </p>
@@ -357,7 +405,7 @@ const News = () => {
             />
             <button
               type="submit"
-              className="bg-[#fc561c] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#fc561c] transition-colors"
+              className="bg-[#fc561c] text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors"
             >
               Subscribe
             </button>

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../../lib/firebase';
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, serverTimestamp } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
-import { Upload, X, Edit, Trash2, Eye, EyeOff, Plus, Save, Loader, Download, Image, LogOut, CheckCircle, AlertCircle, Sparkles,Share2 } from 'lucide-react';
+import { Upload, X, Edit, Trash2, Eye, EyeOff, Plus, Save, Loader, Download, Image, LogOut, CheckCircle, AlertCircle, Sparkles, Share2 } from 'lucide-react';
 
 const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platform, url, showThumbnailOptions }) => {
   const [uploading, setUploading] = useState(false);
@@ -258,6 +258,20 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
   );
 };
 
+// News subcategories definition
+const NEWS_SUBCATEGORIES = {
+  politics: ['National Politics', 'International Relations', 'Elections', 'Government Policy', 'Political Analysis'],
+  business: ['Market News', 'Economy', 'Startups', 'Corporate', 'Finance', 'Cryptocurrency'],
+  technology: ['AI & Machine Learning', 'Gadgets', 'Software', 'Cybersecurity', 'Space & Science'],
+  health: ['Medical Research', 'Public Health', 'Mental Health', 'Fitness & Wellness', 'Pandemic Updates'],
+  sports: ['Football', 'Basketball', 'Tennis', 'Olympics', 'Local Sports', 'International Sports'],
+  entertainment: ['Movies', 'Music', 'TV Shows', 'Celebrity News', 'Arts & Culture'],
+  climate: ['Climate Change', 'Environmental Policy', 'Renewable Energy', 'Conservation', 'Weather'],
+  education: ['Schools', 'Universities', 'EdTech', 'Student Life', 'Educational Policy'],
+  crime: ['Local Crime', 'Investigations', 'Court Cases', 'Public Safety'],
+  social: ['Community Events', 'Human Interest', 'Social Issues', 'Lifestyle']
+};
+
 const Admin = () => {
   const [user, setUser] = useState(null);
   const [email, setEmail] = useState('');
@@ -266,6 +280,7 @@ const Admin = () => {
   const [postType, setPostType] = useState('regular');
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
+  const [subcategory, setSubcategory] = useState('');
   const [content, setContent] = useState('');
   const [url, setUrl] = useState('');
   const [platform, setPlatform] = useState('instagram');
@@ -299,6 +314,11 @@ const Admin = () => {
       setThumbnailOption('auto');
     }
   }, [postType]);
+
+  // Reset subcategory when category changes
+  useEffect(() => {
+    setSubcategory('');
+  }, [category]);
 
   const clearMessages = () => {
     setTimeout(() => {
@@ -417,6 +437,7 @@ const Admin = () => {
           await updateDoc(postRef, {
             title,
             category: category.toLowerCase(),
+            subcategory: category === 'news' ? subcategory : null,
             content,
             image: imageUrl || null,
             author: author || 'Anonymous',
@@ -441,6 +462,7 @@ const Admin = () => {
             platform,
             url,
             category: category.toLowerCase(),
+            subcategory: category === 'news' ? subcategory : null,
             title: title || `Social Post ${new Date().toLocaleString()}`,
             image: thumbnailOption === 'none' ? null : finalImageUrl,
             author: author || null,
@@ -458,6 +480,7 @@ const Admin = () => {
           const post = {
             title,
             category: category.toLowerCase(),
+            subcategory: category === 'news' ? subcategory : null,
             content,
             image: imageUrl || null,
             author: author || 'Anonymous',
@@ -485,6 +508,7 @@ const Admin = () => {
             platform,
             url,
             category: category.toLowerCase(),
+            subcategory: category === 'news' ? subcategory : null,
             title: title || `Social Post ${new Date().toLocaleString()}`,
             image: thumbnailOption === 'none' ? null : finalImageUrl,
             author: author || null,
@@ -522,10 +546,12 @@ const Admin = () => {
 
     if (type === 'regular') {
       setCategory(item.category || '');
+      setSubcategory(item.subcategory || '');
       setContent(item.content || '');
       setThumbnailOption('custom');
     } else {
       setCategory(item.category || '');
+      setSubcategory(item.subcategory || '');
       setPlatform(item.platform || 'instagram');
       setUrl(item.url || '');
       setThumbnailOption(item.image ? 'custom' : 'auto');
@@ -558,6 +584,7 @@ const Admin = () => {
     setPostType('regular');
     setTitle('');
     setCategory('');
+    setSubcategory('');
     setContent('');
     setUrl('');
     setPlatform('instagram');
@@ -845,7 +872,33 @@ const Admin = () => {
                       </select>
                     </div>
 
-                    <div>
+                    {category === 'news' && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          News Subcategory
+                        </label>
+                        <select
+                          value={subcategory}
+                          onChange={(e) => setSubcategory(e.target.value)}
+                          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                        >
+                          <option value="">Select Subcategory (Optional)</option>
+                          {Object.entries(NEWS_SUBCATEGORIES).map(([key, subs]) => (
+                            <optgroup key={key} label={key.charAt(0).toUpperCase() + key.slice(1)}>
+                              {subs.map(sub => (
+                                <option key={sub} value={sub}>{sub}</option>
+                              ))}
+                            </optgroup>
+                          ))}
+                        </select>
+                      </motion.div>
+                    )}
+
+                    <div className={category === 'news' ? '' : 'md:col-start-2'}>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">Author</label>
                       <input
                         type="text"
@@ -905,6 +958,32 @@ const Admin = () => {
                         </select>
                       </div>
                     </div>
+
+                    {category === 'news' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          News Subcategory
+                        </label>
+                        <select
+                          value={subcategory}
+                          onChange={(e) => setSubcategory(e.target.value)}
+                          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                        >
+                          <option value="">Select Subcategory (Optional)</option>
+                          {Object.entries(NEWS_SUBCATEGORIES).map(([key, subs]) => (
+                            <optgroup key={key} label={key.charAt(0).toUpperCase() + key.slice(1)}>
+                              {subs.map(sub => (
+                                <option key={sub} value={sub}>{sub}</option>
+                              ))}
+                            </optgroup>
+                          ))}
+                        </select>
+                      </motion.div>
+                    )}
 
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -967,12 +1046,24 @@ const Admin = () => {
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Content <span className="text-[#fc561c]">*</span>
                     </label>
+                    <div className="mb-2 text-xs text-gray-600 bg-blue-50 p-3 rounded-lg">
+                      <p className="font-semibold mb-1">💡 Formatting Tips:</p>
+                      <ul className="list-disc list-inside space-y-1">
+                        <li>Press Enter twice to create paragraph breaks</li>
+                        <li>Paste YouTube links directly in the text - they'll show as embedded videos when reading</li>
+                        <li>Links will be automatically detected and made clickable</li>
+                      </ul>
+                    </div>
                     <textarea
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
-                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50 resize-none"
-                      rows="6"
-                      placeholder="Write your content here..."
+                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50 resize-none font-mono text-sm"
+                      rows="12"
+                      placeholder="Write your content here...
+
+You can add YouTube links like: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+Press Enter twice to create new paragraphs."
                       required
                     />
                   </motion.div>
@@ -1124,9 +1215,16 @@ const Admin = () => {
                       )}
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="inline-block bg-gradient-to-r from-[#fc561c] to-orange-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
-                            {post.category.toUpperCase()}
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="inline-block bg-gradient-to-r from-[#fc561c] to-orange-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm w-fit">
+                              {post.category.toUpperCase()}
+                            </span>
+                            {post.subcategory && (
+                              <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full w-fit">
+                                {post.subcategory}
+                              </span>
+                            )}
+                          </div>
                           <span className="text-xs text-gray-500">
                             {new Date(post.date).toLocaleDateString()}
                           </span>
@@ -1169,7 +1267,9 @@ const Admin = () => {
                                 } else {
                                   window.prompt('Copy this link', url);
                                 }
-                              } catch (_) {}
+                              } catch (_) {
+                                // Error silently ignored
+                              }
                             }}
                             className="flex-1 bg-gray-100 text-gray-800 px-4 py-2.5 rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center font-medium shadow-sm"
                           >
@@ -1208,9 +1308,16 @@ const Admin = () => {
                       )}
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="inline-block bg-gradient-to-r from-purple-600 to-purple-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm uppercase">
-                            {link.platform} - {link.category}
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="inline-block bg-gradient-to-r from-purple-600 to-purple-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm uppercase w-fit">
+                              {link.platform} - {link.category}
+                            </span>
+                            {link.subcategory && (
+                              <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full w-fit">
+                                {link.subcategory}
+                              </span>
+                            )}
+                          </div>
                           <span className="text-xs text-gray-500">
                             {new Date(link.date).toLocaleDateString()}
                           </span>
