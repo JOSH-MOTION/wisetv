@@ -16,6 +16,7 @@ const Footer = () => {
     { name: 'Interviews', path: '/interviews' },
     { name: 'Movies', path: '/movies' },
     { name: 'Photojournalism', path: '/photojournalism' },
+    { name: 'Videos', path: '/videos' },
   ];
 
   const services = [

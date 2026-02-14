@@ -142,6 +142,9 @@ const Header = () => {
           >
             Photojournalism
           </Link>
+          <Link to="/videos" onClick={closeMenu} className="block hover:text-gray-200 py-2 px-2 rounded ...">
+  Videos
+</Link>
 
           {user && (
             <div className="relative lg:inline-block">

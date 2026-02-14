@@ -290,6 +290,11 @@ const Admin = () => {
   const [facebookHandle, setFacebookHandle] = useState('');
   const [posts, setPosts] = useState([]);
   const [socialLinks, setSocialLinks] = useState([]);
+  // ── VIDEO additions ──────────────────────────────────────────────
+  const [videos, setVideos] = useState([]);
+  const [videoCategory, setVideoCategory] = useState('');
+  const [videoDescription, setVideoDescription] = useState('');
+  // ────────────────────────────────────────────────────────────────
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [editingPost, setEditingPost] = useState(null);
@@ -349,6 +354,7 @@ const Admin = () => {
       await signOut(auth);
       setPosts([]);
       setSocialLinks([]);
+      setVideos([]);
       setSuccess('Logged out successfully! 👋');
     } catch (error) {
       setError('Logout failed: ' + error.message);
@@ -362,11 +368,15 @@ const Admin = () => {
       if (!currentUserId) {
         setPosts([]);
         setSocialLinks([]);
+        setVideos([]);
         return;
       }
 
       const postsQuery = query(collection(db, 'posts'), where('createdBy', '==', currentUserId));
       const linksQuery = query(collection(db, 'socialLinks'), where('createdBy', '==', currentUserId));
+      // ── VIDEO fetch ──────────────────────────────────────────────
+      const videosQuery = query(collection(db, 'videos'), where('createdBy', '==', currentUserId));
+      // ────────────────────────────────────────────────────────────
 
       const postsSnapshot = await getDocs(postsQuery);
       const postsData = postsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -375,6 +385,12 @@ const Admin = () => {
       const linksSnapshot = await getDocs(linksQuery);
       const linksData = linksSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setSocialLinks(linksData);
+
+      // ── VIDEO fetch ──────────────────────────────────────────────
+      const videosSnapshot = await getDocs(videosQuery);
+      const videosData = videosSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      setVideos(videosData);
+      // ────────────────────────────────────────────────────────────
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Failed to fetch posts: ' + error.message);
@@ -428,10 +444,26 @@ const Admin = () => {
     setLoading(true);
     try {
       if (editingPost) {
-        const collectionName = editingPost.type === 'regular' ? 'posts' : 'socialLinks';
-        const postRef = doc(db, collectionName, editingPost.id);
-
-        if (editingPost.type === 'regular') {
+        // ── VIDEO edit ───────────────────────────────────────────
+        if (editingPost.type === 'video') {
+          if (!title || !url || !videoCategory)
+            return setError('Title, YouTube URL, and Video Category are required.');
+          const videoId = getYouTubeVideoId(url);
+          const autoThumb = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+          await updateDoc(doc(db, 'videos', editingPost.id), {
+            title,
+            url,
+            videoCategory,
+            description: videoDescription || null,
+            image: imageUrl || autoThumb || null,
+            author: author || 'Anonymous',
+            date: new Date().toISOString(),
+            instagramHandle: instagramHandle || null,
+            facebookHandle: facebookHandle || null,
+          });
+        // ────────────────────────────────────────────────────────
+        } else if (editingPost.type === 'regular') {
+          const postRef = doc(db, 'posts', editingPost.id);
           if (!title || !category || !content)
             return setError('Title, category, and content are required.');
           await updateDoc(postRef, {
@@ -447,6 +479,7 @@ const Admin = () => {
             views: 0
           });
         } else {
+          const postRef = doc(db, 'socialLinks', editingPost.id);
           if (!url || !category) return setError('URL and category are required for social posts.');
           
           let finalImageUrl = imageUrl;
@@ -474,7 +507,29 @@ const Admin = () => {
         }
         setSuccess('Post updated successfully! ✨');
       } else {
-        if (postType === 'regular') {
+        // ── VIDEO create ─────────────────────────────────────────
+        if (postType === 'video') {
+          if (!title || !url || !videoCategory)
+            return setError('Title, YouTube URL, and Video Category are required.');
+          const videoId = getYouTubeVideoId(url);
+          const autoThumb = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+          const video = {
+            title,
+            url,
+            videoCategory,
+            description: videoDescription || null,
+            image: imageUrl || autoThumb || null,
+            author: author || 'Anonymous',
+            date: new Date().toISOString(),
+            createdAt: serverTimestamp(),
+            instagramHandle: instagramHandle || null,
+            facebookHandle: facebookHandle || null,
+            createdBy: user.uid,
+            views: 0,
+          };
+          await addDoc(collection(db, 'videos'), video);
+        // ────────────────────────────────────────────────────────
+        } else if (postType === 'regular') {
           if (!title || !category || !content)
             return setError('Title, category, and content are required.');
           const post = {
@@ -544,7 +599,14 @@ const Admin = () => {
     setInstagramHandle(item.instagramHandle || '');
     setFacebookHandle(item.facebookHandle || '');
 
-    if (type === 'regular') {
+    // ── VIDEO edit populate ──────────────────────────────────────
+    if (type === 'video') {
+      setUrl(item.url || '');
+      setVideoCategory(item.videoCategory || '');
+      setVideoDescription(item.description || '');
+      setThumbnailOption('custom');
+    } else if (type === 'regular') {
+    // ────────────────────────────────────────────────────────────
       setCategory(item.category || '');
       setSubcategory(item.subcategory || '');
       setContent(item.content || '');
@@ -566,7 +628,9 @@ const Admin = () => {
     
     setLoading(true);
     try {
-      const collectionName = type === 'regular' ? 'posts' : 'socialLinks';
+      // ── VIDEO delete ─────────────────────────────────────────
+      const collectionName = type === 'video' ? 'videos' : type === 'regular' ? 'posts' : 'socialLinks';
+      // ────────────────────────────────────────────────────────
       await deleteDoc(doc(db, collectionName, id));
       setSuccess('Post deleted successfully! 🗑️');
       fetchData();
@@ -593,6 +657,10 @@ const Admin = () => {
     setInstagramHandle('');
     setFacebookHandle('');
     setThumbnailOption('auto');
+    // ── VIDEO reset ──────────────────────────────────────────────
+    setVideoCategory('');
+    setVideoDescription('');
+    // ────────────────────────────────────────────────────────────
     setError(null);
     setSuccess(null);
   };
@@ -826,12 +894,13 @@ const Admin = () => {
                     >
                       <option value="regular">📝 Regular Post</option>
                       <option value="social">📱 Social Media Post</option>
+                      <option value="video">🎬 Video Post</option>
                     </select>
                   </motion.div>
 
                   <motion.div variants={itemVariants}>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Title {postType === 'regular' && <span className="text-[#fc561c]">*</span>}
+                      Title {(postType === 'regular' || postType === 'video') && <span className="text-[#fc561c]">*</span>}
                     </label>
                     <input
                       type="text"
@@ -839,7 +908,7 @@ const Admin = () => {
                       onChange={(e) => setTitle(e.target.value)}
                       className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
                       placeholder={postType === 'social' ? 'Optional (auto-generated)' : 'Enter post title'}
-                      required={postType === 'regular'}
+                      required={postType === 'regular' || postType === 'video'}
                     />
                   </motion.div>
                 </motion.div>
@@ -1038,6 +1107,80 @@ const Admin = () => {
                   </motion.div>
                 )}
 
+                {/* ── VIDEO FORM ─────────────────────────────────────────────── */}
+                {postType === 'video' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-6"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          YouTube URL <span className="text-[#fc561c]">*</span>
+                        </label>
+                        <input
+                          type="url"
+                          value={url}
+                          onChange={(e) => setUrl(e.target.value)}
+                          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                          placeholder="https://youtube.com/watch?v=..."
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Video Category <span className="text-[#fc561c]">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={videoCategory}
+                          onChange={(e) => setVideoCategory(e.target.value)}
+                          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                          placeholder="e.g. News Videos, Funny Clips, Interviews..."
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Description <span className="text-gray-400 font-normal">(optional)</span>
+                      </label>
+                      <textarea
+                        value={videoDescription}
+                        onChange={(e) => setVideoDescription(e.target.value)}
+                        className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50 resize-none"
+                        rows="3"
+                        placeholder="Short description of the video..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Author</label>
+                      <input
+                        type="text"
+                        value={author}
+                        onChange={(e) => setAuthor(e.target.value)}
+                        className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                        placeholder="Author name (optional)"
+                      />
+                    </div>
+
+                    <motion.div
+                      className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4 flex items-start gap-3"
+                    >
+                      <Sparkles className="text-red-500 mt-0.5" size={20} />
+                      <p className="text-sm text-red-800">
+                        <strong>Auto-Thumbnail:</strong> The YouTube thumbnail will be fetched automatically from the URL. You can override it by uploading a custom image below.
+                      </p>
+                    </motion.div>
+                  </motion.div>
+                )}
+                {/* ── END VIDEO FORM ──────────────────────────────────────────── */}
+
                 {postType === 'regular' && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -1069,7 +1212,7 @@ Press Enter twice to create new paragraphs."
                   </motion.div>
                 )}
 
-                {(postType === 'regular' || thumbnailOption === 'custom') && (
+                {(postType === 'regular' || postType === 'video' || thumbnailOption === 'custom') && (
                   <CloudinaryUpload
                     onUploadSuccess={setImageUrl}
                     onUploadError={setError}
@@ -1158,7 +1301,7 @@ Press Enter twice to create new paragraphs."
             >
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-bold text-gray-900">Manage Posts</h2>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
                   <span className="bg-[#fc561c] text-white px-3 py-1 rounded-full font-semibold">
                     {posts.length}
                   </span>
@@ -1167,10 +1310,15 @@ Press Enter twice to create new paragraphs."
                     {socialLinks.length}
                   </span>
                   <span>Social</span>
+                  {/* ── VIDEO count badge ── */}
+                  <span className="bg-red-600 text-white px-3 py-1 rounded-full font-semibold ml-2">
+                    {videos.length}
+                  </span>
+                  <span>Videos</span>
                 </div>
               </div>
               
-              {posts.length === 0 && socialLinks.length === 0 ? (
+              {posts.length === 0 && socialLinks.length === 0 && videos.length === 0 ? (
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -1369,6 +1517,90 @@ Press Enter twice to create new paragraphs."
                       </div>
                     </motion.div>
                   ))}
+
+                  {/* ── VIDEO CARDS ──────────────────────────────────────────── */}
+                  {videos.map((video, index) => (
+                    <motion.div
+                      key={video.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: (posts.length + socialLinks.length + index) * 0.1 }}
+                      whileHover={{ y: -8 }}
+                      className="bg-gradient-to-br from-red-50 to-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all border-2 border-red-200"
+                    >
+                      {video.image && (
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          className="overflow-hidden relative"
+                        >
+                          <img
+                            src={video.image}
+                            alt={video.title}
+                            className="w-full h-48 object-cover transition-transform duration-300"
+                            onError={(e) => {
+                              const svg = `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="200" fill="#FF0000"/><text x="50%" y="50%" font-family="Arial" font-size="16" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Video</text></svg>`;
+                              e.target.src = `data:image/svg+xml;base64,${btoa(svg)}`;
+                            }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="bg-black/50 rounded-full p-3">
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                <polygon points="5,3 19,12 5,21" />
+                              </svg>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="inline-block bg-gradient-to-r from-red-600 to-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm uppercase w-fit">
+                            🎬 {video.videoCategory}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(video.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold mb-2 line-clamp-2 text-gray-900">{video.title}</h3>
+                        {video.description && (
+                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{video.description}</p>
+                        )}
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-1">
+                          <a
+                            href={video.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            {video.url}
+                          </a>
+                        </p>
+                        <p className="text-xs text-gray-500 mb-4">
+                          By: {video.author || 'Anonymous'}
+                        </p>
+                        <div className="flex gap-2">
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleEdit(video, 'video')}
+                            className="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-all flex items-center justify-center font-medium shadow-sm"
+                          >
+                            <Edit size={16} className="mr-1" />
+                            Edit
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleDelete(video.id, 'video')}
+                            className="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-xl hover:bg-red-600 transition-all flex items-center justify-center font-medium shadow-sm"
+                          >
+                            <Trash2 size={16} className="mr-1" />
+                            Delete
+                          </motion.button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                  {/* ── END VIDEO CARDS ──────────────────────────────────────── */}
                 </div>
               )}
             </motion.div>

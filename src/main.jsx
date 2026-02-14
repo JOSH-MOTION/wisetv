@@ -10,6 +10,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Blog from './pages/Blog';
+import Videos from './pages/Videos';
 import BlogPost from './pages/BlogPost';
 import Documentaries from './pages/Documentaries';
 import News from './pages/News';
@@ -65,6 +66,8 @@ function PublicRoutes() {
       <Header />
       <main className="flex-grow">
         <Routes>
+       
+         
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/posts/:id" element={<BlogPost />} />
@@ -74,6 +77,7 @@ function PublicRoutes() {
           <Route path="/interviews" element={<Interviews />} />
           <Route path="/movies" element={<Movies />} />
           <Route path="/photojournalism" element={<Photojournalism />} />
+          <Route path="/videos" element={<Videos />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
