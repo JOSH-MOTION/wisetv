@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { db } from '../../lib/firebase';
 import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
-import { ArrowLeft, Calendar, User, Share2, Eye } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Share2, Eye, Paperclip } from 'lucide-react';
 
 // Helper function to extract YouTube video ID
 const getYouTubeVideoId = (url) => {
@@ -41,22 +41,54 @@ const YouTubeEmbed = ({ url }) => {
   );
 };
 
+// Helper function to render text with clickable links
+const renderTextWithLinks = (text) => {
+  const urlPattern = /https?:\/\/(?!(?:www\.)?(?:youtube\.com|youtu\.be))([^\s]+)/g;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = urlPattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+    
+    const url = match[0];
+    parts.push(
+      <a
+        key={match.index}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-[#fc561c] hover:underline font-medium"
+      >
+        {url}
+      </a>
+    );
+    
+    lastIndex = match.index + url.length;
+  }
+  
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+  
+  return parts.length > 0 ? parts : text;
+};
+
 // Component to process and render content with embedded videos and links
 const RichContent = ({ content }) => {
   if (!content) return null;
 
-  // Split content by double line breaks to create paragraphs
   const paragraphs = content.split(/\n\n+/);
 
   return (
     <div className="prose prose-slate max-w-none">
       {paragraphs.map((para, idx) => {
-        // Check if paragraph contains a YouTube link
         const youtubeMatch = para.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?#\s]+)/);
         
         if (youtubeMatch) {
           const [youtubeUrl] = youtubeMatch;
-          // Split the paragraph at the YouTube link
           const parts = para.split(youtubeUrl);
           
           return (
@@ -76,7 +108,6 @@ const RichContent = ({ content }) => {
           );
         }
         
-        // Regular paragraph with link detection
         return (
           <p key={idx} className="mb-4 text-slate-700 leading-relaxed">
             {renderTextWithLinks(para)}
@@ -85,45 +116,6 @@ const RichContent = ({ content }) => {
       })}
     </div>
   );
-};
-
-// Helper function to render text with clickable links
-const renderTextWithLinks = (text) => {
-  // Regular expression to match URLs (excluding YouTube URLs which are handled separately)
-  const urlPattern = /https?:\/\/(?!(?:www\.)?(?:youtube\.com|youtu\.be))([^\s]+)/g;
-  const parts = [];
-  let lastIndex = 0;
-  let match;
-
-  while ((match = urlPattern.exec(text)) !== null) {
-    // Add text before the link
-    if (match.index > lastIndex) {
-      parts.push(text.substring(lastIndex, match.index));
-    }
-    
-    // Add the link
-    const url = match[0];
-    parts.push(
-      <a
-        key={match.index}
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-[#fc561c] hover:underline font-medium"
-      >
-        {url}
-      </a>
-    );
-    
-    lastIndex = match.index + url.length;
-  }
-  
-  // Add remaining text
-  if (lastIndex < text.length) {
-    parts.push(text.substring(lastIndex));
-  }
-  
-  return parts.length > 0 ? parts : text;
 };
 
 const BlogPost = () => {
@@ -147,11 +139,8 @@ const BlogPost = () => {
         const data = { id: snap.id, ...snap.data() };
         setPost(data);
         
-        // Increment view count
         try {
-          await updateDoc(ref, {
-            views: increment(1)
-          });
+          await updateDoc(ref, { views: increment(1) });
         } catch (e) {
           console.log('Could not increment views:', e);
         }
@@ -170,11 +159,9 @@ const BlogPost = () => {
   }, [load]);
 
   const handleBack = () => {
-    // Check if there's history to go back to
     if (window.history.length > 2) {
       navigate(-1);
     } else {
-      // If no history, go to blog page
       navigate('/blog');
     }
   };
@@ -343,18 +330,53 @@ const BlogPost = () => {
 
             <RichContent content={post.content} />
 
+            {/* ── ATTACHMENT IMAGE ──────────────────────────────────────── */}
+            {post.attachmentImage && (
+              <div className="mt-10 pt-8 border-t border-slate-200">
+                <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <Paperclip size={15} />
+                  Attachment
+                </h3>
+                <div className="rounded-xl overflow-hidden shadow-md border border-slate-200">
+                  <img
+                    src={post.attachmentImage}
+                    alt="Article attachment"
+                    className="w-full h-auto"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                </div>
+              </div>
+            )}
+            {/* ── END ATTACHMENT IMAGE ─────────────────────────────────── */}
+
             {(post.instagramHandle || post.facebookHandle) && (
               <div className="mt-8 p-6 bg-slate-100 rounded-xl">
                 <h3 className="text-lg font-semibold text-slate-900 mb-3">Connect with the author</h3>
                 <div className="space-y-2">
                   {post.instagramHandle && (
                     <p className="text-slate-700">
-                      📱 Instagram: <a href={`https://instagram.com/${post.instagramHandle.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-[#fc561c] hover:underline">{post.instagramHandle}</a>
+                      📱 Instagram:{' '}
+                      <a
+                        href={`https://instagram.com/${post.instagramHandle.replace('@', '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#fc561c] hover:underline"
+                      >
+                        {post.instagramHandle}
+                      </a>
                     </p>
                   )}
                   {post.facebookHandle && (
                     <p className="text-slate-700">
-                      👥 Facebook: <a href={`https://facebook.com/${post.facebookHandle.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-[#fc561c] hover:underline">{post.facebookHandle}</a>
+                      👥 Facebook:{' '}
+                      <a
+                        href={`https://facebook.com/${post.facebookHandle.replace('@', '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#fc561c] hover:underline"
+                      >
+                        {post.facebookHandle}
+                      </a>
                     </p>
                   )}
                 </div>

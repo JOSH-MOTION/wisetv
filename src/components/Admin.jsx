@@ -258,6 +258,86 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
   );
 };
 
+// ── Attachment Image Upload (simple, inline) ──────────────────────────────────
+const AttachmentUpload = ({ value, onChange, onError }) => {
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { onError?.('Please select an image file'); return; }
+    if (file.size > 10 * 1024 * 1024) { onError?.('File size must be less than 10MB'); return; }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+      formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        { method: 'POST', body: formData }
+      );
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      onChange(data.secure_url);
+    } catch (err) {
+      onError?.('Failed to upload attachment: ' + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+      <div className="flex items-center justify-between">
+        <label className="block text-sm font-semibold text-gray-700">
+          📎 Article Attachment Image{' '}
+          <span className="text-gray-400 font-normal">(optional — shown at bottom of article)</span>
+        </label>
+        {value && (
+          <motion.button
+            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            type="button"
+            onClick={() => onChange('')}
+            className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-medium"
+          >
+            <X size={12} /> Remove
+          </motion.button>
+        )}
+      </div>
+
+      {value ? (
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative">
+          <img
+            src={value}
+            alt="Attachment preview"
+            className="w-full h-48 object-cover rounded-xl border-2 border-dashed border-green-300 shadow-sm"
+          />
+          <span className="absolute top-2 left-2 bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow">
+            ✓ Attachment set
+          </span>
+        </motion.div>
+      ) : (
+        <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center bg-gray-50/50 hover:border-[#fc561c]/40 transition-colors">
+          <label className="cursor-pointer block">
+            <span className="text-sm font-semibold text-gray-500 hover:text-[#fc561c] bg-gray-100 px-5 py-2 rounded-lg inline-block transition-all hover:shadow-sm">
+              {uploading ? 'Uploading…' : 'Upload Attachment Image'}
+            </span>
+            <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={uploading} />
+          </label>
+          <p className="text-xs text-gray-400 mt-2">PNG, JPG, WEBP up to 10MB</p>
+          {uploading && (
+            <div className="mt-3 flex items-center justify-center gap-2 text-sm text-[#fc561c]">
+              <Loader className="animate-spin" size={14} /> Uploading…
+            </div>
+          )}
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
 // News subcategories definition
 const NEWS_SUBCATEGORIES = {
   politics: ['National Politics', 'International Relations', 'Elections', 'Government Policy', 'Political Analysis'],
@@ -286,15 +366,14 @@ const Admin = () => {
   const [platform, setPlatform] = useState('instagram');
   const [author, setAuthor] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [attachmentImageUrl, setAttachmentImageUrl] = useState(''); // ← NEW
   const [instagramHandle, setInstagramHandle] = useState('');
   const [facebookHandle, setFacebookHandle] = useState('');
   const [posts, setPosts] = useState([]);
   const [socialLinks, setSocialLinks] = useState([]);
-  // ── VIDEO additions ──────────────────────────────────────────────
   const [videos, setVideos] = useState([]);
   const [videoCategory, setVideoCategory] = useState('');
   const [videoDescription, setVideoDescription] = useState('');
-  // ────────────────────────────────────────────────────────────────
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [editingPost, setEditingPost] = useState(null);
@@ -320,7 +399,6 @@ const Admin = () => {
     }
   }, [postType]);
 
-  // Reset subcategory when category changes
   useEffect(() => {
     setSubcategory('');
   }, [category]);
@@ -374,9 +452,7 @@ const Admin = () => {
 
       const postsQuery = query(collection(db, 'posts'), where('createdBy', '==', currentUserId));
       const linksQuery = query(collection(db, 'socialLinks'), where('createdBy', '==', currentUserId));
-      // ── VIDEO fetch ──────────────────────────────────────────────
       const videosQuery = query(collection(db, 'videos'), where('createdBy', '==', currentUserId));
-      // ────────────────────────────────────────────────────────────
 
       const postsSnapshot = await getDocs(postsQuery);
       const postsData = postsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -386,11 +462,9 @@ const Admin = () => {
       const linksData = linksSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setSocialLinks(linksData);
 
-      // ── VIDEO fetch ──────────────────────────────────────────────
       const videosSnapshot = await getDocs(videosQuery);
       const videosData = videosSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setVideos(videosData);
-      // ────────────────────────────────────────────────────────────
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Failed to fetch posts: ' + error.message);
@@ -406,19 +480,9 @@ const Admin = () => {
       twitter: { bg: '#1DA1F2', text: '#FFFFFF' },
       tiktok: { bg: '#000000', text: '#FFFFFF' },
     };
-    
     const color = colors[platform.toLowerCase()] || { bg: '#CCCCCC', text: '#FFFFFF' };
     const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
-    
-    const svg = `
-      <svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
-        <rect width="600" height="400" fill="${color.bg}"/>
-        <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="${color.text}" text-anchor="middle" dominant-baseline="middle">
-          ${platformName} Post
-        </text>
-      </svg>
-    `;
-    
+    const svg = `<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg"><rect width="600" height="400" fill="${color.bg}"/><text x="50%" y="50%" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="${color.text}" text-anchor="middle" dominant-baseline="middle">${platformName} Post</text></svg>`;
     return `data:image/svg+xml;base64,${btoa(svg)}`;
   };
 
@@ -429,7 +493,6 @@ const Admin = () => {
       /youtu\.be\/([^&?#]+)/,
       /youtube\.com\/embed\/([^&?#]+)/
     ];
-    
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match && match[1]) return match[1];
@@ -444,7 +507,6 @@ const Admin = () => {
     setLoading(true);
     try {
       if (editingPost) {
-        // ── VIDEO edit ───────────────────────────────────────────
         if (editingPost.type === 'video') {
           if (!title || !url || !videoCategory)
             return setError('Title, YouTube URL, and Video Category are required.');
@@ -461,7 +523,6 @@ const Admin = () => {
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
           });
-        // ────────────────────────────────────────────────────────
         } else if (editingPost.type === 'regular') {
           const postRef = doc(db, 'posts', editingPost.id);
           if (!title || !category || !content)
@@ -472,6 +533,7 @@ const Admin = () => {
             subcategory: category === 'news' ? subcategory : null,
             content,
             image: imageUrl || null,
+            attachmentImage: attachmentImageUrl || null, // ← NEW
             author: author || 'Anonymous',
             instagramHandle: instagramHandle || null,
             facebookHandle: facebookHandle || null,
@@ -507,7 +569,6 @@ const Admin = () => {
         }
         setSuccess('Post updated successfully! ✨');
       } else {
-        // ── VIDEO create ─────────────────────────────────────────
         if (postType === 'video') {
           if (!title || !url || !videoCategory)
             return setError('Title, YouTube URL, and Video Category are required.');
@@ -528,7 +589,6 @@ const Admin = () => {
             views: 0,
           };
           await addDoc(collection(db, 'videos'), video);
-        // ────────────────────────────────────────────────────────
         } else if (postType === 'regular') {
           if (!title || !category || !content)
             return setError('Title, category, and content are required.');
@@ -538,6 +598,7 @@ const Admin = () => {
             subcategory: category === 'news' ? subcategory : null,
             content,
             image: imageUrl || null,
+            attachmentImage: attachmentImageUrl || null, // ← NEW
             author: author || 'Anonymous',
             date: new Date().toISOString(),
             createdAt: serverTimestamp(),
@@ -599,23 +660,24 @@ const Admin = () => {
     setInstagramHandle(item.instagramHandle || '');
     setFacebookHandle(item.facebookHandle || '');
 
-    // ── VIDEO edit populate ──────────────────────────────────────
     if (type === 'video') {
       setUrl(item.url || '');
       setVideoCategory(item.videoCategory || '');
       setVideoDescription(item.description || '');
+      setAttachmentImageUrl('');
       setThumbnailOption('custom');
     } else if (type === 'regular') {
-    // ────────────────────────────────────────────────────────────
       setCategory(item.category || '');
       setSubcategory(item.subcategory || '');
       setContent(item.content || '');
+      setAttachmentImageUrl(item.attachmentImage || ''); // ← NEW
       setThumbnailOption('custom');
     } else {
       setCategory(item.category || '');
       setSubcategory(item.subcategory || '');
       setPlatform(item.platform || 'instagram');
       setUrl(item.url || '');
+      setAttachmentImageUrl('');
       setThumbnailOption(item.image ? 'custom' : 'auto');
     }
 
@@ -628,9 +690,7 @@ const Admin = () => {
     
     setLoading(true);
     try {
-      // ── VIDEO delete ─────────────────────────────────────────
       const collectionName = type === 'video' ? 'videos' : type === 'regular' ? 'posts' : 'socialLinks';
-      // ────────────────────────────────────────────────────────
       await deleteDoc(doc(db, collectionName, id));
       setSuccess('Post deleted successfully! 🗑️');
       fetchData();
@@ -654,13 +714,12 @@ const Admin = () => {
     setPlatform('instagram');
     setAuthor('');
     setImageUrl('');
+    setAttachmentImageUrl(''); // ← NEW
     setInstagramHandle('');
     setFacebookHandle('');
     setThumbnailOption('auto');
-    // ── VIDEO reset ──────────────────────────────────────────────
     setVideoCategory('');
     setVideoDescription('');
-    // ────────────────────────────────────────────────────────────
     setError(null);
     setSuccess(null);
   };
@@ -676,23 +735,14 @@ const Admin = () => {
     return placeholders[platform] || 'Enter social media URL';
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1
-    }
+    visible: { y: 0, opacity: 1 }
   };
 
   return (
@@ -742,11 +792,7 @@ const Admin = () => {
               </AnimatePresence>
 
               <form onSubmit={handleLogin} className="space-y-6">
-                <motion.div
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
+                <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
                   <input
                     type="email"
@@ -758,11 +804,7 @@ const Admin = () => {
                   />
                 </motion.div>
 
-                <motion.div
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
+                <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
                   <div className="relative">
                     <input
@@ -1107,7 +1149,7 @@ const Admin = () => {
                   </motion.div>
                 )}
 
-                {/* ── VIDEO FORM ─────────────────────────────────────────────── */}
+                {/* Video Form */}
                 {postType === 'video' && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
@@ -1169,9 +1211,7 @@ const Admin = () => {
                       />
                     </div>
 
-                    <motion.div
-                      className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4 flex items-start gap-3"
-                    >
+                    <motion.div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
                       <Sparkles className="text-red-500 mt-0.5" size={20} />
                       <p className="text-sm text-red-800">
                         <strong>Auto-Thumbnail:</strong> The YouTube thumbnail will be fetched automatically from the URL. You can override it by uploading a custom image below.
@@ -1179,13 +1219,9 @@ const Admin = () => {
                     </motion.div>
                   </motion.div>
                 )}
-                {/* ── END VIDEO FORM ──────────────────────────────────────────── */}
 
                 {postType === 'regular' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Content <span className="text-[#fc561c]">*</span>
                     </label>
@@ -1202,11 +1238,7 @@ const Admin = () => {
                       onChange={(e) => setContent(e.target.value)}
                       className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50 resize-none font-mono text-sm"
                       rows="12"
-                      placeholder="Write your content here...
-
-You can add YouTube links like: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-
-Press Enter twice to create new paragraphs."
+                      placeholder="Write your content here..."
                       required
                     />
                   </motion.div>
@@ -1220,6 +1252,15 @@ Press Enter twice to create new paragraphs."
                     platform={postType === 'social' ? platform : 'regular'}
                     url={url}
                     showThumbnailOptions={postType === 'social'}
+                  />
+                )}
+
+                {/* ── ATTACHMENT IMAGE (regular posts only) ── */}
+                {postType === 'regular' && (
+                  <AttachmentUpload
+                    value={attachmentImageUrl}
+                    onChange={setAttachmentImageUrl}
+                    onError={setError}
                   />
                 )}
 
@@ -1302,18 +1343,11 @@ Press Enter twice to create new paragraphs."
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-bold text-gray-900">Manage Posts</h2>
                 <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
-                  <span className="bg-[#fc561c] text-white px-3 py-1 rounded-full font-semibold">
-                    {posts.length}
-                  </span>
+                  <span className="bg-[#fc561c] text-white px-3 py-1 rounded-full font-semibold">{posts.length}</span>
                   <span>Regular</span>
-                  <span className="bg-purple-600 text-white px-3 py-1 rounded-full font-semibold ml-2">
-                    {socialLinks.length}
-                  </span>
+                  <span className="bg-purple-600 text-white px-3 py-1 rounded-full font-semibold ml-2">{socialLinks.length}</span>
                   <span>Social</span>
-                  {/* ── VIDEO count badge ── */}
-                  <span className="bg-red-600 text-white px-3 py-1 rounded-full font-semibold ml-2">
-                    {videos.length}
-                  </span>
+                  <span className="bg-red-600 text-white px-3 py-1 rounded-full font-semibold ml-2">{videos.length}</span>
                   <span>Videos</span>
                 </div>
               </div>
@@ -1346,10 +1380,7 @@ Press Enter twice to create new paragraphs."
                       className="bg-gradient-to-br from-gray-50 to-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all border border-gray-100"
                     >
                       {post.image && (
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          className="overflow-hidden"
-                        >
+                        <motion.div whileHover={{ scale: 1.05 }} className="overflow-hidden">
                           <img
                             src={post.image}
                             alt={post.title}
@@ -1372,16 +1403,17 @@ Press Enter twice to create new paragraphs."
                                 {post.subcategory}
                               </span>
                             )}
+                            {post.attachmentImage && (
+                              <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full w-fit">
+                                📎 Has attachment
+                              </span>
+                            )}
                           </div>
-                          <span className="text-xs text-gray-500">
-                            {new Date(post.date).toLocaleDateString()}
-                          </span>
+                          <span className="text-xs text-gray-500">{new Date(post.date).toLocaleDateString()}</span>
                         </div>
                         <h3 className="text-lg font-bold mb-2 line-clamp-2 text-gray-900">{post.title}</h3>
                         <p className="text-gray-600 text-sm mb-3 line-clamp-2">{post.content}</p>
-                        <p className="text-xs text-gray-500 mb-4">
-                          By: {post.author || 'Anonymous'}
-                        </p>
+                        <p className="text-xs text-gray-500 mb-4">By: {post.author || 'Anonymous'}</p>
                         <div className="flex gap-2 flex-wrap">
                           <motion.button
                             whileHover={{ scale: 1.05 }}
@@ -1389,8 +1421,7 @@ Press Enter twice to create new paragraphs."
                             onClick={() => handleEdit(post, 'regular')}
                             className="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-all flex items-center justify-center font-medium shadow-sm"
                           >
-                            <Edit size={16} className="mr-1" />
-                            Edit
+                            <Edit size={16} className="mr-1" /> Edit
                           </motion.button>
                           <motion.button
                             whileHover={{ scale: 1.05 }}
@@ -1398,31 +1429,27 @@ Press Enter twice to create new paragraphs."
                             onClick={() => handleDelete(post.id, 'regular')}
                             className="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-xl hover:bg-red-600 transition-all flex items-center justify-center font-medium shadow-sm"
                           >
-                            <Trash2 size={16} className="mr-1" />
-                            Delete
+                            <Trash2 size={16} className="mr-1" /> Delete
                           </motion.button>
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={async () => {
-                              const url = `${window.location.origin}/posts/${post.id}`;
+                              const shareUrl = `${window.location.origin}/posts/${post.id}`;
                               try {
                                 if (navigator.share) {
-                                  await navigator.share({ title: post.title || 'Blog post', url });
+                                  await navigator.share({ title: post.title || 'Blog post', url: shareUrl });
                                 } else if (navigator.clipboard) {
-                                  await navigator.clipboard.writeText(url);
+                                  await navigator.clipboard.writeText(shareUrl);
                                   setSuccess('Link copied to clipboard');
                                 } else {
-                                  window.prompt('Copy this link', url);
+                                  window.prompt('Copy this link', shareUrl);
                                 }
-                              } catch (_) {
-                                // Error silently ignored
-                              }
+                              } catch (_) {}
                             }}
                             className="flex-1 bg-gray-100 text-gray-800 px-4 py-2.5 rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center font-medium shadow-sm"
                           >
-                            <Share2 size={16} className="mr-1" />
-                            Share
+                            <Share2 size={16} className="mr-1" /> Share
                           </motion.button>
                         </div>
                       </div>
@@ -1439,10 +1466,7 @@ Press Enter twice to create new paragraphs."
                       className="bg-gradient-to-br from-purple-50 to-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all border-2 border-purple-200"
                     >
                       {link.image && (
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          className="overflow-hidden"
-                        >
+                        <motion.div whileHover={{ scale: 1.05 }} className="overflow-hidden">
                           <img
                             src={link.image}
                             alt={link.title}
@@ -1466,34 +1490,13 @@ Press Enter twice to create new paragraphs."
                               </span>
                             )}
                           </div>
-                          <span className="text-xs text-gray-500">
-                            {new Date(link.date).toLocaleDateString()}
-                          </span>
+                          <span className="text-xs text-gray-500">{new Date(link.date).toLocaleDateString()}</span>
                         </div>
                         <h3 className="text-lg font-bold mb-2 line-clamp-2 text-gray-900">{link.title}</h3>
                         <p className="text-gray-600 text-sm mb-3 line-clamp-1">
-                          <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            {link.url}
-                          </a>
+                          <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{link.url}</a>
                         </p>
-                        <p className="text-xs text-gray-500 mb-4">
-                          By: {link.author || 'N/A'}
-                        </p>
-                        {(link.instagramHandle || link.facebookHandle) && (
-                          <div className="mb-4 space-y-1">
-                            {link.instagramHandle && (
-                              <p className="text-xs text-gray-600">📱 {link.instagramHandle}</p>
-                            )}
-                            {link.facebookHandle && (
-                              <p className="text-xs text-gray-600">👥 {link.facebookHandle}</p>
-                            )}
-                          </div>
-                        )}
+                        <p className="text-xs text-gray-500 mb-4">By: {link.author || 'N/A'}</p>
                         <div className="flex gap-2">
                           <motion.button
                             whileHover={{ scale: 1.05 }}
@@ -1501,8 +1504,7 @@ Press Enter twice to create new paragraphs."
                             onClick={() => handleEdit(link, 'social')}
                             className="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-all flex items-center justify-center font-medium shadow-sm"
                           >
-                            <Edit size={16} className="mr-1" />
-                            Edit
+                            <Edit size={16} className="mr-1" /> Edit
                           </motion.button>
                           <motion.button
                             whileHover={{ scale: 1.05 }}
@@ -1510,15 +1512,13 @@ Press Enter twice to create new paragraphs."
                             onClick={() => handleDelete(link.id, 'social')}
                             className="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-xl hover:bg-red-600 transition-all flex items-center justify-center font-medium shadow-sm"
                           >
-                            <Trash2 size={16} className="mr-1" />
-                            Delete
+                            <Trash2 size={16} className="mr-1" /> Delete
                           </motion.button>
                         </div>
                       </div>
                     </motion.div>
                   ))}
 
-                  {/* ── VIDEO CARDS ──────────────────────────────────────────── */}
                   {videos.map((video, index) => (
                     <motion.div
                       key={video.id}
@@ -1529,10 +1529,7 @@ Press Enter twice to create new paragraphs."
                       className="bg-gradient-to-br from-red-50 to-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all border-2 border-red-200"
                     >
                       {video.image && (
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          className="overflow-hidden relative"
-                        >
+                        <motion.div whileHover={{ scale: 1.05 }} className="overflow-hidden relative">
                           <img
                             src={video.image}
                             alt={video.title}
@@ -1556,27 +1553,13 @@ Press Enter twice to create new paragraphs."
                           <span className="inline-block bg-gradient-to-r from-red-600 to-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm uppercase w-fit">
                             🎬 {video.videoCategory}
                           </span>
-                          <span className="text-xs text-gray-500">
-                            {new Date(video.date).toLocaleDateString()}
-                          </span>
+                          <span className="text-xs text-gray-500">{new Date(video.date).toLocaleDateString()}</span>
                         </div>
                         <h3 className="text-lg font-bold mb-2 line-clamp-2 text-gray-900">{video.title}</h3>
                         {video.description && (
                           <p className="text-gray-600 text-sm mb-3 line-clamp-2">{video.description}</p>
                         )}
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-1">
-                          <a
-                            href={video.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            {video.url}
-                          </a>
-                        </p>
-                        <p className="text-xs text-gray-500 mb-4">
-                          By: {video.author || 'Anonymous'}
-                        </p>
+                        <p className="text-xs text-gray-500 mb-4">By: {video.author || 'Anonymous'}</p>
                         <div className="flex gap-2">
                           <motion.button
                             whileHover={{ scale: 1.05 }}
@@ -1584,8 +1567,7 @@ Press Enter twice to create new paragraphs."
                             onClick={() => handleEdit(video, 'video')}
                             className="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-all flex items-center justify-center font-medium shadow-sm"
                           >
-                            <Edit size={16} className="mr-1" />
-                            Edit
+                            <Edit size={16} className="mr-1" /> Edit
                           </motion.button>
                           <motion.button
                             whileHover={{ scale: 1.05 }}
@@ -1593,14 +1575,12 @@ Press Enter twice to create new paragraphs."
                             onClick={() => handleDelete(video.id, 'video')}
                             className="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-xl hover:bg-red-600 transition-all flex items-center justify-center font-medium shadow-sm"
                           >
-                            <Trash2 size={16} className="mr-1" />
-                            Delete
+                            <Trash2 size={16} className="mr-1" /> Delete
                           </motion.button>
                         </div>
                       </div>
                     </motion.div>
                   ))}
-                  {/* ── END VIDEO CARDS ──────────────────────────────────────── */}
                 </div>
               )}
             </motion.div>
