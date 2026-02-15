@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Play, Calendar, User, Eye, ExternalLink, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { db } from '../../lib/firebase';
+import {
+  collection, addDoc, getDocs, query, orderBy, serverTimestamp
+} from 'firebase/firestore';
+import { Play, Calendar, User, Eye, ExternalLink, X, MessageCircle, Send, ChevronDown, ChevronUp } from 'lucide-react';
 
 const getYouTubeVideoId = (url) => {
   if (!url) return null;
@@ -17,6 +21,7 @@ const getYouTubeVideoId = (url) => {
   return null;
 };
 
+/* ── Video Modal ── */
 const VideoModal = ({ videoId, title, onClose }) => (
   <motion.div
     initial={{ opacity: 0 }}
@@ -53,6 +58,169 @@ const VideoModal = ({ videoId, title, onClose }) => (
   </motion.div>
 );
 
+/* ── Comments Section ── */
+const CommentsSection = ({ videoId }) => {
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [text, setText] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const fetched = useRef(false);
+
+  const fetchComments = async () => {
+    setLoading(true);
+    try {
+      const q = query(
+        collection(db, 'videos', videoId, 'comments'),
+        orderBy('createdAt', 'desc')
+      );
+      const snap = await getDocs(q);
+      setComments(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    } catch (e) {
+      console.error('Failed to load comments', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch once when first opened
+  const handleToggle = () => {
+    if (!open && !fetched.current) {
+      fetched.current = true;
+      fetchComments();
+    }
+    setOpen((prev) => !prev);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!text.trim()) return setError('Please write a comment.');
+    setError('');
+    setSubmitting(true);
+    try {
+      await addDoc(collection(db, 'videos', videoId, 'comments'), {
+        name: name.trim() || 'Anonymous',
+        text: text.trim(),
+        createdAt: serverTimestamp(),
+      });
+      setName('');
+      setText('');
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+      // Refresh comments
+      fetchComments();
+    } catch (e) {
+      setError('Failed to post comment. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const timeAgo = (ts) => {
+    if (!ts) return '';
+    const date = ts.toDate ? ts.toDate() : new Date(ts);
+    const diff = Math.floor((Date.now() - date) / 1000);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
+  };
+
+  return (
+    <div className="border-t border-slate-100 mt-1">
+      {/* Toggle button */}
+      <button
+        onClick={handleToggle}
+        className="w-full flex items-center justify-between px-5 py-3 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors"
+      >
+        <span className="flex items-center gap-2 font-medium">
+          <MessageCircle size={15} />
+          {comments.length > 0 ? `${comments.length} Comment${comments.length !== 1 ? 's' : ''}` : 'Comments'}
+        </span>
+        {open ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 pb-5">
+              {/* Comment form */}
+              <form onSubmit={handleSubmit} className="mb-4 space-y-2">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name (optional)"
+                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#fc561c]/30 focus:border-[#fc561c]/50 transition-all"
+                />
+                <div className="flex gap-2">
+                  <textarea
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Write a comment…"
+                    rows={2}
+                    className="flex-1 text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#fc561c]/30 focus:border-[#fc561c]/50 transition-all resize-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="self-end px-3 py-2 bg-[#fc561c] text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 shrink-0"
+                  >
+                    {submitting
+                      ? <span className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin inline-block" />
+                      : <Send size={15} />
+                    }
+                  </button>
+                </div>
+                {error && <p className="text-red-500 text-xs">{error}</p>}
+                {success && <p className="text-green-600 text-xs">Comment posted!</p>}
+              </form>
+
+              {/* Comments list */}
+              {loading ? (
+                <div className="flex justify-center py-4">
+                  <span className="w-5 h-5 border-2 border-slate-300 border-t-[#fc561c] rounded-full animate-spin" />
+                </div>
+              ) : comments.length === 0 ? (
+                <p className="text-slate-400 text-xs text-center py-3">
+                  No comments yet. Be the first!
+                </p>
+              ) : (
+                <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                  {comments.map((c) => (
+                    <div key={c.id} className="flex gap-3">
+                      <div className="w-7 h-7 rounded-full bg-[#fc561c]/10 flex items-center justify-center shrink-0 text-[#fc561c] font-bold text-xs mt-0.5">
+                        {(c.name || 'A')[0].toUpperCase()}
+                      </div>
+                      <div className="flex-1 bg-slate-50 rounded-xl px-3 py-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-semibold text-slate-700">{c.name || 'Anonymous'}</span>
+                          <span className="text-xs text-slate-400">{timeAgo(c.createdAt)}</span>
+                        </div>
+                        <p className="text-sm text-slate-600 leading-relaxed">{c.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+/* ── Main VideoCard ── */
 const VideoCard = ({ item }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const videoId = getYouTubeVideoId(item.url);
@@ -90,13 +258,15 @@ const VideoCard = ({ item }) => {
       <motion.article
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -6 }}
+        whileHover={{ y: -4 }}
         transition={{ duration: 0.35 }}
-        className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 border border-slate-100 cursor-pointer"
-        onClick={handleClick}
+        className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 border border-slate-100"
       >
-        {/* Thumbnail */}
-        <div className="relative aspect-video overflow-hidden bg-slate-900">
+        {/* Thumbnail — clickable */}
+        <div
+          className="relative aspect-video overflow-hidden bg-slate-900 cursor-pointer"
+          onClick={handleClick}
+        >
           <img
             src={thumbnail || fallbackThumbnail}
             alt={item.title}
@@ -104,11 +274,7 @@ const VideoCard = ({ item }) => {
             loading="lazy"
             onError={(e) => { e.target.src = fallbackThumbnail; }}
           />
-
-          {/* Dark overlay on hover */}
           <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-          {/* Play button */}
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
               className="w-16 h-16 rounded-full bg-[#fc561c] flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -122,14 +288,10 @@ const VideoCard = ({ item }) => {
               )}
             </motion.div>
           </div>
-
-          {/* Persistent play indicator (small) */}
           <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 font-medium">
             <Play size={10} fill="white" />
             {videoId ? 'Watch' : 'View'}
           </div>
-
-          {/* Video category pill */}
           {item.videoCategory && (
             <div
               className="absolute top-3 left-3 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md"
@@ -141,17 +303,15 @@ const VideoCard = ({ item }) => {
         </div>
 
         {/* Content */}
-        <div className="p-5">
+        <div className="p-5 pb-3 cursor-pointer" onClick={handleClick}>
           <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-2 group-hover:text-[#fc561c] transition-colors leading-snug">
             {item.title || 'Untitled Video'}
           </h3>
-
           {item.description && (
             <p className="text-slate-500 text-sm mb-3 line-clamp-2 leading-relaxed">
               {item.description}
             </p>
           )}
-
           <div className="flex items-center justify-between text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100">
             <span className="flex items-center gap-1">
               <Calendar size={12} />
@@ -169,16 +329,21 @@ const VideoCard = ({ item }) => {
             )}
           </div>
         </div>
+
+        {/* Comments — collapsible, separate from click-to-play */}
+        <CommentsSection videoId={item.id} />
       </motion.article>
 
       {/* Modal */}
-      {modalOpen && videoId && (
-        <VideoModal
-          videoId={videoId}
-          title={item.title}
-          onClose={() => setModalOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {modalOpen && videoId && (
+          <VideoModal
+            videoId={videoId}
+            title={item.title}
+            onClose={() => setModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };
