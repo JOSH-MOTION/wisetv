@@ -42,7 +42,7 @@ const Footer = () => {
   const socialLinks = [
     { name: 'Instagram', icon: <Instagram className="w-5 h-5" />, url: 'https://www.instagram.com/w_gh.tv?igsh=MXZzczd4amoxbmE1cQ==' },
     { name: 'Facebook', icon: <Facebook className="w-5 h-5" />, url: 'https://web.facebook.com/profile.php?id=61582270771234' },
-    { name: 'YouTube', icon: <Youtube className="w-5 h-5" />, url: 'https://www.youtube.com/@Wgh_Tv' },
+    { name: 'YouTube', icon: <Youtube className="w-5 h-5" />, url: 'https://www.youtube.com/@w-gh-Tv' },
     { name: 'X (Twitter)', icon: <FaXTwitter className="w-5 h-5" />, url: 'https://x.com/w_gh_tv' },
     { name: 'TikTok', icon: <FaTiktok className="w-5 h-5" />, url: 'https://www.tiktok.com/@wgh.tv?is_from_webapp=1&sender_device=pc' },
     // ── WhatsApp channel added to social icons row ──
