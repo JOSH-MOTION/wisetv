@@ -17,7 +17,7 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
   const generateThumbnailFromUrl = async (url, platform) => {
     if (!url) return null;
     setGeneratingThumbnail(true);
-    
+
     try {
       let thumbnailUrl = null;
 
@@ -48,7 +48,7 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
     } finally {
       setGeneratingThumbnail(false);
     }
-    
+
     return null;
   };
 
@@ -68,7 +68,7 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
       /youtu\.be\/([^&?#]+)/,
       /youtube\.com\/embed\/([^&?#]+)/
     ];
-    
+
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match && match[1]) return match[1];
@@ -84,10 +84,10 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
       twitter: { bg: '#1DA1F2', text: '#FFFFFF' },
       tiktok: { bg: '#000000', text: '#FFFFFF' },
     };
-    
+
     const color = colors[platform.toLowerCase()] || { bg: '#CCCCCC', text: '#FFFFFF' };
     const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
-    
+
     const svg = `
       <svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
         <rect width="600" height="400" fill="${color.bg}"/>
@@ -96,7 +96,7 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
         </text>
       </svg>
     `;
-    
+
     return `data:image/svg+xml;base64,${btoa(svg)}`;
   };
 
@@ -148,7 +148,7 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-4"
@@ -157,7 +157,7 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
         <label className="block text-sm font-semibold text-gray-700">
           Thumbnail Image
         </label>
-        
+
         {showThumbnailOptions && platform && platform !== 'regular' && url && (
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -172,10 +172,10 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
           </motion.button>
         )}
       </div>
-      
+
       <AnimatePresence mode="wait">
         {preview ? (
-          <motion.div 
+          <motion.div
             key="preview"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -203,7 +203,7 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-[#fc561c] hover:bg-orange-50/30 transition-all cursor-pointer bg-gradient-to-br from-gray-50 to-white"
+            className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-[#0B132B] hover:bg-[#0B132B]/5 transition-all cursor-pointer bg-gradient-to-br from-gray-50 to-white"
           >
             <motion.div
               animate={{ y: [0, -10, 0] }}
@@ -211,9 +211,9 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
             >
               <Image className="mx-auto h-16 w-16 text-gray-400 mb-4" />
             </motion.div>
-            
+
             <label className="cursor-pointer block">
-              <span className="text-sm font-semibold text-[#fc561c] hover:text-orange-600 bg-orange-100 px-6 py-2.5 rounded-lg inline-block transition-all hover:shadow-md">
+              <span className="text-sm font-semibold text-[#0B132B] hover:text-[#1C2541] bg-slate-100 px-6 py-2.5 rounded-lg inline-block transition-all hover:shadow-md">
                 {uploading ? 'Uploading...' : 'Choose Image'}
               </span>
               <input
@@ -224,11 +224,11 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
                 disabled={uploading}
               />
             </label>
-            
+
             <p className="text-xs text-gray-500 mt-4">PNG, JPG, WEBP up to 10MB</p>
-            
+
             {generatingThumbnail && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="mt-4 flex items-center justify-center gap-2 text-sm text-blue-600"
@@ -242,15 +242,15 @@ const CloudinaryUpload = ({ onUploadSuccess, onUploadError, currentImage, platfo
       </AnimatePresence>
 
       {uploading && (
-        <motion.div 
+        <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           className="w-full bg-gray-200 rounded-full h-2 overflow-hidden"
         >
-          <motion.div 
+          <motion.div
             animate={{ x: ['-100%', '100%'] }}
             transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-            className="bg-gradient-to-r from-[#fc561c] to-orange-400 h-2 w-1/3"
+            className="bg-gradient-to-r from-[#0B132B] to-blue-900 h-2 w-1/3"
           />
         </motion.div>
       )}
@@ -503,7 +503,7 @@ const Admin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return setError('Please log in to post updates.');
-    
+
     setLoading(true);
     try {
       if (editingPost) {
@@ -543,7 +543,7 @@ const Admin = () => {
         } else {
           const postRef = doc(db, 'socialLinks', editingPost.id);
           if (!url || !category) return setError('URL and category are required for social posts.');
-          
+
           let finalImageUrl = imageUrl;
           if (thumbnailOption === 'auto' && !finalImageUrl) {
             if (platform === 'youtube') {
@@ -552,7 +552,7 @@ const Admin = () => {
             }
             if (!finalImageUrl) finalImageUrl = createPlaceholderImage(platform);
           }
-          
+
           await updateDoc(postRef, {
             platform,
             url,
@@ -610,7 +610,7 @@ const Admin = () => {
           await addDoc(collection(db, 'posts'), post);
         } else {
           if (!url || !category) return setError('URL and category are required for social posts.');
-          
+
           let finalImageUrl = imageUrl;
           if (thumbnailOption === 'auto' && !finalImageUrl) {
             if (platform === 'youtube') {
@@ -619,7 +619,7 @@ const Admin = () => {
             }
             if (!finalImageUrl) finalImageUrl = createPlaceholderImage(platform);
           }
-          
+
           const link = {
             platform,
             url,
@@ -687,7 +687,7 @@ const Admin = () => {
   const handleDelete = async (id, type) => {
     if (!user) return setError('Please log in to delete posts.');
     if (!confirm('Are you sure you want to delete this post?')) return;
-    
+
     setLoading(true);
     try {
       const collectionName = type === 'video' ? 'videos' : type === 'regular' ? 'posts' : 'socialLinks';
@@ -767,7 +767,7 @@ const Admin = () => {
                 <motion.div
                   animate={{ rotate: [0, 360] }}
                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  className="bg-gradient-to-br from-[#fc561c] to-orange-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"
+                  className="bg-gradient-to-br from-[#0B132B] to-[#1C2541] w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"
                 >
                   <Sparkles className="w-10 h-10 text-white" />
                 </motion.div>
@@ -798,7 +798,7 @@ const Admin = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition-all bg-gray-50"
                     placeholder="Enter your email"
                     required
                   />
@@ -811,7 +811,7 @@ const Admin = () => {
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full p-4 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                      className="w-full p-4 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition-all bg-gray-50"
                       placeholder="Enter your password"
                       required
                     />
@@ -832,7 +832,7 @@ const Admin = () => {
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-[#fc561c] to-orange-600 text-white p-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full bg-gradient-to-r from-[#0B132B] to-[#1C2541] text-white p-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {loading ? <Loader className="animate-spin mr-2" size={20} /> : null}
                   {loading ? 'Signing in...' : 'Sign In'}
@@ -910,7 +910,7 @@ const Admin = () => {
                 <motion.div
                   whileHover={{ rotate: 180 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-gradient-to-br from-[#fc561c] to-orange-600 p-3 rounded-2xl shadow-lg"
+                  className="bg-gradient-to-br from-[#0B132B] to-[#1C2541] p-3 rounded-2xl shadow-lg"
                 >
                   <Plus className="text-white" size={24} />
                 </motion.div>
@@ -1120,11 +1120,10 @@ const Admin = () => {
                             key={option}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                              thumbnailOption === option
-                                ? 'border-[#fc561c] bg-orange-50'
-                                : 'border-gray-200 hover:border-[#fc561c] bg-white'
-                            }`}
+                            className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${thumbnailOption === option
+                                ? 'border-[#0B132B] bg-slate-50'
+                                : 'border-gray-200 hover:border-[#0B132B] bg-white'
+                              }`}
                           >
                             <input
                               type="radio"
@@ -1132,7 +1131,7 @@ const Admin = () => {
                               value={option}
                               checked={thumbnailOption === option}
                               onChange={(e) => setThumbnailOption(e.target.value)}
-                              className="text-[#fc561c] focus:ring-[#fc561c] mr-3"
+                              className="text-[#0B132B] focus:ring-[#0B132B] mr-3"
                             />
                             <div>
                               <div className="font-semibold text-gray-900 capitalize">{option}</div>
@@ -1160,13 +1159,13 @@ const Admin = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          YouTube URL <span className="text-[#fc561c]">*</span>
+                          YouTube URL <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="url"
                           value={url}
                           onChange={(e) => setUrl(e.target.value)}
-                          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition-all bg-gray-50"
                           placeholder="https://youtube.com/watch?v=..."
                           required
                         />
@@ -1174,13 +1173,13 @@ const Admin = () => {
 
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Video Category <span className="text-[#fc561c]">*</span>
+                          Video Category <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={videoCategory}
                           onChange={(e) => setVideoCategory(e.target.value)}
-                          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition-all bg-gray-50"
                           placeholder="e.g. News Videos, Funny Clips, Interviews..."
                           required
                         />
@@ -1194,7 +1193,7 @@ const Admin = () => {
                       <textarea
                         value={videoDescription}
                         onChange={(e) => setVideoDescription(e.target.value)}
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50 resize-none"
+                        className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition-all bg-gray-50 resize-none"
                         rows="3"
                         placeholder="Short description of the video..."
                       />
@@ -1206,12 +1205,12 @@ const Admin = () => {
                         type="text"
                         value={author}
                         onChange={(e) => setAuthor(e.target.value)}
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                        className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition-all bg-gray-50"
                         placeholder="Author name (optional)"
                       />
                     </div>
 
-                    <motion.div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                    <motion.div className="bg-gradient-to-r from-blue-50 to-slate-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
                       <Sparkles className="text-red-500 mt-0.5" size={20} />
                       <p className="text-sm text-red-800">
                         <strong>Auto-Thumbnail:</strong> The YouTube thumbnail will be fetched automatically from the URL. You can override it by uploading a custom image below.
@@ -1223,7 +1222,7 @@ const Admin = () => {
                 {postType === 'regular' && (
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Content <span className="text-[#fc561c]">*</span>
+                      Content <span className="text-red-500">*</span>
                     </label>
                     <div className="mb-2 text-xs text-gray-600 bg-blue-50 p-3 rounded-lg">
                       <p className="font-semibold mb-1">💡 Formatting Tips:</p>
@@ -1236,7 +1235,7 @@ const Admin = () => {
                     <textarea
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
-                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50 resize-none font-mono text-sm"
+                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition-all bg-gray-50 resize-none font-mono text-sm"
                       rows="12"
                       placeholder="Write your content here..."
                       required
@@ -1273,8 +1272,8 @@ const Admin = () => {
                     <Sparkles className="text-blue-600 mt-0.5" size={20} />
                     <p className="text-sm text-blue-800">
                       <strong>Auto-Thumbnail:</strong> {
-                        platform === 'youtube' 
-                          ? 'YouTube thumbnail will be automatically fetched.' 
+                        platform === 'youtube'
+                          ? 'YouTube thumbnail will be automatically fetched.'
                           : `${platform.charAt(0).toUpperCase() + platform.slice(1)}-themed placeholder will be generated.`
                       }
                     </p>
@@ -1288,7 +1287,7 @@ const Admin = () => {
                       type="text"
                       value={instagramHandle}
                       onChange={(e) => setInstagramHandle(e.target.value)}
-                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition-all bg-gray-50"
                       placeholder="@username"
                     />
                   </div>
@@ -1299,7 +1298,7 @@ const Admin = () => {
                       type="text"
                       value={facebookHandle}
                       onChange={(e) => setFacebookHandle(e.target.value)}
-                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:border-transparent transition-all bg-gray-50"
+                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition-all bg-gray-50"
                       placeholder="@username"
                     />
                   </div>
@@ -1311,12 +1310,12 @@ const Admin = () => {
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={loading}
-                    className="flex-1 bg-gradient-to-r from-[#fc561c] to-orange-600 text-white p-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="flex-1 bg-gradient-to-r from-[#0B132B] to-[#1C2541] text-white p-4 rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {loading ? <Loader className="animate-spin mr-2" size={20} /> : <Save className="mr-2" size={20} />}
                     {loading ? 'Saving...' : (editingPost ? 'Update Post' : 'Create Post')}
                   </motion.button>
-                  
+
                   {editingPost && (
                     <motion.button
                       whileHover={{ scale: 1.02 }}
@@ -1343,7 +1342,7 @@ const Admin = () => {
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-bold text-gray-900">Manage Posts</h2>
                 <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
-                  <span className="bg-[#fc561c] text-white px-3 py-1 rounded-full font-semibold">{posts.length}</span>
+                  <span className="bg-[#0B132B] text-white px-3 py-1 rounded-full font-semibold">{posts.length}</span>
                   <span>Regular</span>
                   <span className="bg-purple-600 text-white px-3 py-1 rounded-full font-semibold ml-2">{socialLinks.length}</span>
                   <span>Social</span>
@@ -1351,7 +1350,7 @@ const Admin = () => {
                   <span>Videos</span>
                 </div>
               </div>
-              
+
               {posts.length === 0 && socialLinks.length === 0 && videos.length === 0 ? (
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
@@ -1395,7 +1394,7 @@ const Admin = () => {
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex flex-col gap-1">
-                            <span className="inline-block bg-gradient-to-r from-[#fc561c] to-orange-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm w-fit">
+                            <span className="inline-block bg-gradient-to-r from-[#0B132B] to-[#1C2541] text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm w-fit">
                               {post.category.toUpperCase()}
                             </span>
                             {post.subcategory && (
@@ -1445,7 +1444,7 @@ const Admin = () => {
                                 } else {
                                   window.prompt('Copy this link', shareUrl);
                                 }
-                              } catch (_) {}
+                              } catch (_) { }
                             }}
                             className="flex-1 bg-gray-100 text-gray-800 px-4 py-2.5 rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center font-medium shadow-sm"
                           >
@@ -1455,7 +1454,7 @@ const Admin = () => {
                       </div>
                     </motion.div>
                   ))}
-                  
+
                   {socialLinks.map((link, index) => (
                     <motion.div
                       key={link.id}

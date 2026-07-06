@@ -101,10 +101,10 @@ const Footer = () => {
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
+                  className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   required
                 />
-                <button className="bg-[#fc561c] hover:bg-[#e64d19] px-6 py-2 rounded-full font-medium transition-all duration-300">
+                <button className="bg-[#0B132B] hover:bg-[#1C2541] px-6 py-2 rounded-full font-medium transition-all duration-300">
                   Subscribe
                 </button>
               </form>
@@ -118,7 +118,7 @@ const Footer = () => {
               {services.map((service) => (
                 <span
                   key={service}
-                  className="text-slate-300 text-sm hover:text-[#fc561c] hover:pl-2 transition-all duration-200 cursor-default"
+                  className="text-slate-300 text-sm hover:text-[#3B82F6] hover:pl-2 transition-all duration-200 cursor-default"
                 >
                   • {service}
                 </span>
@@ -134,7 +134,7 @@ const Footer = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="text-slate-300 hover:text-[#fc561c] hover:pl-2 transition-all duration-200 text-sm"
+                  className="text-slate-300 hover:text-[#3B82F6] hover:pl-2 transition-all duration-200 text-sm"
                 >
                   {link.name}
                 </Link>
@@ -148,7 +148,7 @@ const Footer = () => {
             <div className="space-y-3 mb-6">
               <a
                 href="mailto:wghtv2@gmail.com"
-                className="flex items-start gap-2 text-slate-300 hover:text-[#fc561c] transition-all duration-200 text-sm"
+                className="flex items-start gap-2 text-slate-300 hover:text-[#3B82F6] transition-all duration-200 text-sm"
               >
                 <Mail className="w-4 h-4 mt-1 flex-shrink-0" />
                 <span>wghtv2@gmail.com</span>
@@ -156,8 +156,8 @@ const Footer = () => {
               <div className="flex items-start gap-2 text-slate-300 text-sm">
                 <Phone className="w-4 h-4 mt-1 flex-shrink-0" />
                 <div className="flex flex-col">
-                  <a href="tel:+233506217671" className="hover:text-[#fc561c] transition-all duration-200">0506 217 671</a>
-                  <a href="tel:+233303981823" className="hover:text-[#fc561c] transition-all duration-200">030 398 1823</a>
+                  <a href="tel:+233506217671" className="hover:text-[#3B82F6] transition-all duration-200">0506 217 671</a>
+                  <a href="tel:+233303981823" className="hover:text-[#3B82F6] transition-all duration-200">030 398 1823</a>
                 </div>
               </div>
               <div className="flex items-start gap-2 text-slate-300 text-sm">
@@ -181,7 +181,7 @@ const Footer = () => {
                   className={`border p-2 rounded-full transition-all duration-300 ${
                     social.name === 'WhatsApp'
                       ? 'bg-[#25D366]/20 border-[#25D366]/50 text-[#25D366] hover:bg-[#25D366]/30 hover:border-[#25D366]'
-                      : 'bg-white/10 backdrop-blur-sm border-slate-600 text-slate-300 hover:text-[#fc561c] hover:border-[#fc561c]'
+                      : 'bg-white/10 backdrop-blur-sm border-slate-600 text-slate-300 hover:text-[#3B82F6] hover:border-[#3B82F6]'
                   }`}
                   aria-label={`Follow us on ${social.name}`}
                 >
@@ -200,8 +200,8 @@ const Footer = () => {
             © {currentYear} WiseTV. All rights reserved.
           </div>
           <div className="flex gap-6 text-sm">
-            <Link to="/privacy" className="text-slate-400 hover:text-[#fc561c] transition-all duration-200">Privacy Policy</Link>
-            <Link to="/terms" className="text-slate-400 hover:text-[#fc561c] transition-all duration-200">Terms of Service</Link>
+            <Link to="/privacy" className="text-slate-400 hover:text-[#3B82F6] transition-all duration-200">Privacy Policy</Link>
+            <Link to="/terms" className="text-slate-400 hover:text-[#3B82F6] transition-all duration-200">Terms of Service</Link>
           </div>
         </div>
       </div>
@@ -209,7 +209,7 @@ const Footer = () => {
       {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-24 right-6 bg-[#fc561c]/80 backdrop-blur-sm hover:bg-[#fc561c] text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50 group"
+        className="fixed bottom-24 right-6 bg-[#0B132B]/80 backdrop-blur-sm hover:bg-[#0B132B] text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50 group"
         aria-label="Back to top"
       >
         <ArrowUp className="w-5 h-5 transform group-hover:-translate-y-1 transition-transform duration-200" />

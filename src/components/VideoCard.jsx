@@ -168,12 +168,12 @@ const CommentsSection = ({ videoId }) => {
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Write a comment…"
                     rows={2}
-                    className="flex-1 text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#fc561c]/30 focus:border-[#fc561c]/50 transition-all resize-none"
+                    className="flex-1 text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0B132B]/30 focus:border-[#0B132B]/50 transition-all resize-none"
                   />
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="self-end px-3 py-2 bg-[#fc561c] text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 shrink-0"
+                    className="self-end px-3 py-2 bg-[#0B132B] text-white rounded-lg hover:bg-[#1C2541] transition-colors disabled:opacity-50 shrink-0"
                   >
                     {submitting
                       ? <span className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin inline-block" />

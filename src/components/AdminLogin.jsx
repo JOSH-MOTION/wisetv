@@ -51,7 +51,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-slate-200 flex items-center justify-center p-4">
       <motion.div
         className="max-w-md w-full bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-white/30"
         variants={containerVariants}
@@ -142,7 +142,7 @@ const AdminLogin = () => {
           <motion.button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#fc561c] text-white p-3 rounded-lg font-medium hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-[#fc561c] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-[#0B132B] text-white p-3 rounded-lg font-medium hover:bg-[#1C2541] focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -170,7 +170,7 @@ const AdminLogin = () => {
         <div className="mt-6 text-center">
           <Link
             to="/admin/signup"
-            className="text-sm text-[#fc561c] hover:text-orange-600 font-medium flex items-center justify-center gap-2"
+            className="text-sm text-[#0B132B] hover:text-[#1C2541] font-medium flex items-center justify-center gap-2"
           >
             <ArrowLeft size={16} />
             Need an account? Sign up

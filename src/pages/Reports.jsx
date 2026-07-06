@@ -118,7 +118,7 @@ const Reports = () => {
       {/* Error Display */}
       {error && (
         <div className="container mx-auto px-4 py-4">
-          <div className="bg-[#fc561c]50 border border-[#fc561c] text-[#fc561c] px-4 py-3 rounded-lg">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
             {error}
           </div>
         </div>
@@ -126,7 +126,7 @@ const Reports = () => {
 
       {/* Header Section with Logo */}
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-[#fc561c] bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center">
+        <div className="bg-[#0B132B] bg-opacity-95 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center">
           <div className="inline-flex items-center mb-6">
             <Link to="/">
               <img
@@ -140,7 +140,7 @@ const Reports = () => {
             </Link>
             <h3 className="text-3xl font-bold text-white">Reports</h3>
           </div>
-          <p className="text-lg text-[#fc561c] max-w-2xl mx-auto">
+          <p className="text-lg text-blue-300 max-w-2xl mx-auto">
             Dive into in-depth analyses and investigative reports that uncover the stories shaping our world.
           </p>
         </div>
@@ -155,7 +155,7 @@ const Reports = () => {
               placeholder="Search reports..."
               value={searchQuery}
               onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0B132B]"
             />
             <Play className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
           </div>
@@ -166,7 +166,7 @@ const Reports = () => {
                 onClick={() => handleCategoryChange(category)}
                 className={`px-4 py-2 rounded-full font-medium ${
                   selectedCategory === category
-                    ? 'bg-[#fc561c] text-white'
+                    ? 'bg-[#0B132B] text-white'
                     : 'bg-slate-200 text-slate-900 hover:bg-slate-300'
                 } transition-colors`}
               >

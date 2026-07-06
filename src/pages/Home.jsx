@@ -120,7 +120,7 @@ const Home = () => {
     { name: 'documentaries', icon: <Play className="w-5 h-5" />, color: 'from-purple-600 to-pink-600' },
     { name: 'news', icon: <Newspaper className="w-5 h-5" />, color: 'from-blue-600 to-cyan-600' },
     { name: 'reports', icon: <BarChart className="w-5 h-5" />, color: 'from-green-600 to-teal-600' },
-    { name: 'interviews', icon: <Mic className="w-5 h-5" />, color: 'from-orange-600 to-red-600' },
+    { name: 'interviews', icon: <Mic className="w-5 h-5" />, color: 'from-slate-700 to-indigo-900' },
     { name: 'movies', icon: <Film className="w-5 h-5" />, color: 'from-indigo-600 to-purple-600' },
     { name: 'photojournalism', icon: <Camera className="w-5 h-5" />, color: 'from-pink-600 to-rose-600' },
   ];
@@ -202,7 +202,7 @@ const Home = () => {
         className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 py-16"
       >
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-orange-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 left-0 w-64 h-64 bg-blue-900 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-80 h-80 bg-purple-500 rounded-full blur-3xl"></div>
         </div>
         <div className="container mx-auto px-4 relative z-10">
@@ -210,14 +210,14 @@ const Home = () => {
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              className="inline-flex items-center bg-orange-500/20 border border-orange-500/30 rounded-full px-5 py-2 mb-6"
+              className="inline-flex items-center bg-blue-500/20 border border-blue-500/30 rounded-full px-5 py-2 mb-6"
             >
-              <Sparkles className="w-4 h-4 mr-2 text-orange-500" />
-              <span className="text-orange-500 text-sm font-medium">ABOUT W-GH TV</span>
+              <Sparkles className="w-4 h-4 mr-2 text-blue-400" />
+              <span className="text-blue-400 text-sm font-medium">ABOUT W-GH TV</span>
             </motion.div>
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
               Empowering Voices,{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
                 Driving Change
               </span>
             </h2>
@@ -241,7 +241,7 @@ const Home = () => {
                   variants={cardVariants}
                   className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20"
                 >
-                  <div className="text-orange-500 mb-2">{item.icon}</div>
+                  <div className="text-blue-400 mb-2">{item.icon}</div>
                   <h3 className="text-white font-semibold mb-1">{item.title}</h3>
                   <p className="text-gray-300 text-sm">{item.text}</p>
                 </motion.div>
@@ -263,10 +263,10 @@ const Home = () => {
           <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-5 py-2 mb-4"
+            className="inline-flex items-center bg-[#0B132B]/10 border border-[#0B132B]/20 rounded-full px-5 py-2 mb-4"
           >
-            <Play className="w-4 h-4 mr-2 text-orange-500" />
-            <span className="text-orange-500 text-sm font-medium">FEATURED CONTENT</span>
+            <Play className="w-4 h-4 mr-2 text-[#0B132B]" />
+            <span className="text-[#0B132B] text-sm font-medium">FEATURED CONTENT</span>
           </motion.div>
           <h2 className="text-3xl font-bold text-gray-900 mb-3">Watch Now</h2>
           <p className="text-gray-600 text-base">Our latest featured video content</p>
@@ -304,17 +304,17 @@ const Home = () => {
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-5 py-2 mb-4"
+              className="inline-flex items-center bg-[#0B132B]/10 border border-[#0B132B]/20 rounded-full px-5 py-2 mb-4"
             >
-              <TrendingUp className="w-4 h-4 mr-2 text-orange-500" />
-              <span className="text-orange-500 text-sm font-medium">TRENDING NOW</span>
+              <TrendingUp className="w-4 h-4 mr-2 text-[#0B132B]" />
+              <span className="text-[#0B132B] text-sm font-medium">TRENDING NOW</span>
             </motion.div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Latest Updates</h2>
             <p className="text-gray-600 text-base">Fresh content from all categories</p>
           </div>
           <Link
             to="/all"
-            className="hidden md:inline-flex items-center bg-orange-500 text-white px-5 py-2 rounded-full font-semibold hover:bg-orange-600 transition-all duration-300 shadow-md hover:shadow-lg"
+            className="hidden md:inline-flex items-center bg-[#0B132B] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#1C2541] transition-all duration-300 shadow-md hover:shadow-lg"
           >
             View All
             <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -382,7 +382,7 @@ const Home = () => {
               </div>
               <Link
                 to={`/${category.name}`}
-                className="inline-flex items-center text-orange-500 hover:text-orange-600 font-semibold transition-colors group"
+                className="inline-flex items-center text-[#0B132B] hover:text-[#1C2541] font-semibold transition-colors group"
               >
                 View All
                 <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -437,7 +437,7 @@ const Home = () => {
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="relative overflow-hidden bg-gradient-to-r from-orange-500 to-yellow-500 py-16"
+        className="relative overflow-hidden bg-gradient-to-r from-[#0B132B] to-slate-900 py-16"
       >
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 right-0 w-80 h-80 bg-white rounded-full blur-3xl"></div>

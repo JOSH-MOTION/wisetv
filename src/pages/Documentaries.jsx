@@ -117,7 +117,7 @@ const Documentaries = () => {
               Dive deep into compelling narratives that explore the most pressing issues of our time, told through the lens of award-winning documentarians.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="group inline-flex items-center bg-[#fc561c] text-white px-8 py-4 rounded-full font-semibold hover:bg-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl">
+              <button className="group inline-flex items-center bg-[#0B132B] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#1C2541] transition-all duration-300 shadow-lg hover:shadow-xl">
                 <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                 Watch Featured
               </button>
@@ -175,7 +175,7 @@ const Documentaries = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                      <button className="flex items-center bg-[#fc561c] text-white px-4 py-2 rounded-full font-medium hover:bg-orange-600 transition-colors">
+                      <button className="flex items-center bg-[#0B132B] text-white px-4 py-2 rounded-full font-medium hover:bg-[#1C2541] transition-colors">
                         <Play className="w-4 h-4 mr-2" />
                         Watch Now
                       </button>
@@ -199,7 +199,7 @@ const Documentaries = () => {
                 {/* Content */}
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-3">
-                    <span className="inline-flex items-center bg-[#fc561c] text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    <span className="inline-flex items-center bg-[#0B132B] text-white px-3 py-1 rounded-full text-xs font-semibold">
                       DOCUMENTARY
                     </span>
                     {item.views && (
@@ -210,7 +210,7 @@ const Documentaries = () => {
                     )}
                   </div>
                   
-                  <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#fc561c] transition-colors">
+                  <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#3B82F6] transition-colors">
                     {item.title}
                   </h3>
                   
@@ -262,7 +262,7 @@ const Documentaries = () => {
           <p className="text-slate-300 mb-8 max-w-2xl mx-auto">
             Share your story with our global audience. We're always looking for compelling documentaries that spark conversation and drive change.
           </p>
-          <button className="bg-[#fc561c] text-white px-8 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors">
+          <button className="bg-[#0B132B] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1C2541] transition-colors">
             Submit Your Film
           </button>
         </div>

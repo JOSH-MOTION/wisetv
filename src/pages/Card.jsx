@@ -95,7 +95,7 @@ const Card = ({ item }) => {
                   href={detailUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center bg-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-orange-600 transition-colors"
+                  className="flex items-center bg-[#0B132B] text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-[#1C2541] transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Play className="w-3 h-3 mr-1" />
@@ -104,7 +104,7 @@ const Card = ({ item }) => {
               ) : (
                 <Link
                   to={detailUrl}
-                  className="flex items-center bg-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-orange-600 transition-colors"
+                  className="flex items-center bg-[#0B132B] text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-[#1C2541] transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Play className="w-3 h-3 mr-1" />
@@ -141,7 +141,7 @@ const Card = ({ item }) => {
 
         <div className="p-4">
           <div className="flex items-start justify-between mb-2">
-            <span className="inline-flex items-center bg-orange-500/10 text-orange-500 px-2.5 py-1 rounded-full text-xs font-semibold">
+            <span className="inline-flex items-center bg-[#0B132B]/10 text-[#0B132B] px-2.5 py-1 rounded-full text-xs font-semibold">
               {item.type === 'social' ? `${item.platform.toUpperCase()} - ${item.category.toUpperCase()}` : item.category.toUpperCase()}
             </span>
             {item.views !== undefined && (
@@ -152,7 +152,7 @@ const Card = ({ item }) => {
             )}
           </div>
 
-          <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2 hover:text-orange-500 transition-colors">
+          <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2 hover:text-[#3B82F6] transition-colors">
             {item.title}
           </h3>
 

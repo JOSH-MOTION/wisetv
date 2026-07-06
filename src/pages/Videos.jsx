@@ -71,14 +71,14 @@ const Videos = () => {
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#0d0d0d] text-white py-20 px-4">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#fc561c]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-900/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative container mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-[#fc561c]/15 border border-[#fc561c]/30 rounded-full px-5 py-2 mb-6 text-[#fc561c] text-sm font-semibold tracking-widest uppercase"
+            className="inline-flex items-center gap-2 bg-[#0B132B]/15 border border-[#0B132B]/30 rounded-full px-5 py-2 mb-6 text-blue-400 text-sm font-semibold tracking-widest uppercase"
           >
             <Film size={14} />
             Video Library
@@ -91,8 +91,8 @@ const Videos = () => {
             className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight"
             style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
           >
-            Watch &{' '}
-            <span className="text-[#fc561c]">Experience</span>
+             Watch &{' '}
+            <span className="text-[#3B82F6]">Experience</span>
           </motion.h1>
 
           <motion.p
@@ -158,7 +158,7 @@ const Videos = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search videos…"
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#fc561c]/50 focus:border-[#fc561c]/40 transition-all"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B132B]/50 focus:border-[#0B132B]/40 transition-all"
             />
           </div>
 
@@ -170,7 +170,7 @@ const Videos = () => {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
                   activeCategory === cat
-                    ? 'bg-[#fc561c] text-white shadow-lg shadow-[#fc561c]/20'
+                    ? 'bg-[#0B132B] text-white shadow-lg shadow-[#0B132B]/20'
                     : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10'
                 }`}
               >
@@ -183,13 +183,13 @@ const Videos = () => {
           <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl p-1 shrink-0">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#fc561c] text-white' : 'text-slate-500 hover:text-white'}`}
+              className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#0B132B] text-white' : 'text-slate-500 hover:text-white'}`}
             >
               <Grid size={15} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-[#fc561c] text-white' : 'text-slate-500 hover:text-white'}`}
+              className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-[#0B132B] text-white' : 'text-slate-500 hover:text-white'}`}
             >
               <LayoutList size={15} />
             </button>
@@ -208,7 +208,7 @@ const Videos = () => {
 
         {loading && (
           <div className="flex flex-col items-center justify-center py-32 text-slate-500">
-            <Loader className="animate-spin mb-4 text-[#fc561c]" size={32} />
+            <Loader className="animate-spin mb-4 text-[#3B82F6]" size={32} />
             <p>Loading videos…</p>
           </div>
         )}
@@ -233,7 +233,7 @@ const Videos = () => {
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="mt-4 text-[#fc561c] text-sm hover:underline"
+                className="mt-4 text-[#3B82F6] text-sm hover:underline"
               >
                 Clear search
               </button>
@@ -326,14 +326,14 @@ const VideoListRow = ({ item }) => {
             <img src={thumbnail} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
           )}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-10 h-10 rounded-full bg-[#fc561c]/80 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-[#0B132B]/80 flex items-center justify-center">
               <Play size={16} className="text-white ml-0.5" fill="white" />
             </div>
           </div>
         </div>
         <div className="flex-1 py-4 pr-4">
           {item.videoCategory && (
-            <span className="text-[#fc561c] text-xs font-bold uppercase tracking-wider">
+            <span className="text-[#3B82F6] text-xs font-bold uppercase tracking-wider">
               {item.videoCategory}
             </span>
           )}

@@ -116,7 +116,7 @@ const Movies = () => {
       {/* Error Display */}
       {error && (
         <div className="container mx-auto px-4 py-4">
-          <div className="bg-[#fc561c] border border-[#fc561c] text-[#fc561c] px-4 py-3 rounded-lg">
+          <div className="bg-red-950 border border-red-500 text-red-200 px-4 py-3 rounded-lg">
             {error}
           </div>
         </div>
@@ -131,7 +131,7 @@ const Movies = () => {
               placeholder="Search movies..."
               value={searchQuery}
               onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
             />
             <Play className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           </div>
@@ -142,7 +142,7 @@ const Movies = () => {
                 onClick={() => handleCategoryChange(category)}
                 className={`px-4 py-2 rounded-full font-medium ${
                   selectedCategory === category
-                    ? 'bg-[#fc561c] text-white'
+                    ? 'bg-[#0B132B] text-white'
                     : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                 } transition-colors`}
               >
@@ -155,7 +155,7 @@ const Movies = () => {
 
       {/* Movies Section */}
       <div className="container mx-auto px-4 py-12">
-        <h4 className="text-3xl font-bold mb-8 text-center text-[#fc561c]">Featured Movies</h4>
+        <h4 className="text-3xl font-bold mb-8 text-center text-blue-400">Featured Movies</h4>
         {loading ? (
           <div className="animate-pulse">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -178,14 +178,13 @@ const Movies = () => {
                   <img
                     src={movie.image}
                     alt={movie.title}
-                    className="w-full h-96 object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-96 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
                     loading="lazy"
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/500x750?text=Image+Not+Found';
+                      e.target.src = 'https://via.placeholder.com/300x400?text=Image+Not+Found';
                     }}
                   />
-                  {/* Wise.svg watermark on the first trailer */}
-                  {index === 0 && (
+                  {movie.trailerKey && (
                     <img
                       src={WiseLogo}
                       alt="WiseTV Watermark"
@@ -198,7 +197,7 @@ const Movies = () => {
                     <div className="flex gap-2 mt-2">
                       <button
                         onClick={() => openTrailerModal(movie.trailerKey)}
-                        className="bg-[#fc561c] text-white p-2 rounded-full hover:bg-[#fc561c] transition-all"
+                        className="bg-[#0B132B] text-white p-2 rounded-full hover:bg-[#1C2541] transition-all"
                         aria-label="Watch trailer"
                       >
                         <Film className="w-5 h-5" />
@@ -235,7 +234,7 @@ const Movies = () => {
         <div className="container mx-auto px-4 flex justify-center mt-8">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
-            className="px-4 py-2 bg-[#fc561c] text-white rounded-full disabled:opacity-50 hover:bg-[#fc561c] transition-all"
+            className="px-4 py-2 bg-[#0B132B] text-white rounded-full disabled:opacity-50 hover:bg-[#1C2541] transition-all"
             disabled={currentPage === 1}
           >
             Previous
@@ -245,7 +244,7 @@ const Movies = () => {
           </span>
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            className="px-4 py-2 bg-[#fc561c] text-white rounded-full disabled:opacity-50 hover:bg-[#fc561c] transition-all"
+            className="px-4 py-2 bg-[#0B132B] text-white rounded-full disabled:opacity-50 hover:bg-[#1C2541] transition-all"
             disabled={currentPage === totalPages}
           >
             Next
@@ -259,7 +258,7 @@ const Movies = () => {
           <div className="relative bg-gray-800 bg-opacity-90 backdrop-blur-sm rounded-2xl p-6 max-w-4xl w-full mx-4">
             <button
               onClick={closeTrailerModal}
-              className="absolute top-4 right-4 bg-[#fc561c] text-white p-2 rounded-full hover:bg-[#fc561c] transition-all"
+              className="absolute top-4 right-4 bg-[#0B132B] text-white p-2 rounded-full hover:bg-[#1C2541] transition-all"
               aria-label="Close modal"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

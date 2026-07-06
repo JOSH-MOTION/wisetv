@@ -265,7 +265,7 @@ const News = () => {
                 {/* FIXED: Added View/Read Full Article button */}
                 <Link
                   to={`/posts/${filteredPosts[0].id}`}
-                  className="inline-flex items-center bg-[#fc561c] text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-all duration-300"
+                  className="inline-flex items-center bg-[#0B132B] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1C2541] transition-all duration-300"
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   Read Full Article
@@ -400,12 +400,12 @@ const News = () => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-full text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#fc561c]"
+              className="flex-1 px-4 py-3 rounded-full text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
               required
             />
             <button
               type="submit"
-              className="bg-[#fc561c] text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors"
+              className="bg-[#0B132B] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1C2541] transition-colors"
             >
               Subscribe
             </button>
